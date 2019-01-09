@@ -1,0 +1,191 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* eki_base
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 12.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-01-09 16:53+0000\n"
+"PO-Revision-Date: 2019-01-09 17:59+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: fr_BE\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_allergens__name
+msgid "Allergen name"
+msgstr "Nom de l'allergène"
+
+#. module: eki_base
+#: model:ir.actions.act_window,name:eki_base.eki_product_allergens_action
+#: model:ir.model.fields,field_description:eki_base.field_product_template__eki_product_allergens_ids
+#: model:ir.ui.menu,name:eki_base.menu_eki_product_allergens_action
+msgid "Allergens"
+msgstr "Allergènes"
+
+#. module: eki_base
+#: model:ir.model,name:eki_base.model_eki_product_allergens
+msgid "Allergens on the product"
+msgstr "Allergènes sur le produit"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_product_template__eki_available_on_pos_caterer
+msgid "Available on PoS caterer"
+msgstr "Disponible sur le PoS traiteur"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_product_template__eki_brand
+msgid "Brand"
+msgstr "Marque"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_product_template__eki_conservation
+msgid "Conservation"
+msgstr "Conservation"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_allergens__create_uid
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_labels__create_uid
+msgid "Created by"
+msgstr "Créé par"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_allergens__create_date
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_labels__create_date
+msgid "Created on"
+msgstr "Créé le"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_allergens__display_name
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_labels__display_name
+msgid "Display Name"
+msgstr "Nom affiché"
+
+#. module: eki_base
+#: model_terms:ir.ui.view,arch_db:eki_base.eki_base_product_template_form_view
+msgid "Ekivrac Information"
+msgstr "Ekivrac Information"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_product_template__eki_has_tare
+msgid "Have tare"
+msgstr "A de la tare"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_allergens__id
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_labels__id
+msgid "ID"
+msgstr "ID"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_product_template__eki_ingredient
+msgid "Ingredient"
+msgstr "Ingrédient"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_product_template__eki_internal_notes
+msgid "Internal Notes"
+msgstr "Notes internes"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_product_template__eki_is_tactile_sale
+msgid "Is for tactile sale"
+msgstr "Est pour la vente tactile"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_labels__name
+msgid "Label name"
+msgstr "Nom du label"
+
+#. module: eki_base
+#: model:ir.actions.act_window,name:eki_base.eki_product_labels_action
+#: model:ir.model.fields,field_description:eki_base.field_product_template__eki_product_labels_ids
+#: model:ir.ui.menu,name:eki_base.menu_eki_product_labels_action
+msgid "Labels"
+msgstr "Labels"
+
+#. module: eki_base
+#: model:ir.model,name:eki_base.model_eki_product_labels
+msgid "Labels on the product"
+msgstr "Labels sur le produit"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_allergens____last_update
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_labels____last_update
+msgid "Last Modified on"
+msgstr "Dernière modification le"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_allergens__write_uid
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_labels__write_uid
+msgid "Last Updated by"
+msgstr "Dernière mise à jour par"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_allergens__write_date
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_labels__write_date
+msgid "Last Updated on"
+msgstr "Dernière mise à jour le"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_product_template__eki_ldap
+msgid "Limit date after purchase"
+msgstr "DLUO après achat"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_product_template__eki_nutritional_values
+msgid "Nutritional Values"
+msgstr "Valeurs nurtitionnelles"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_product_template__eki_nutritional_advise
+msgid "Nutritional advise"
+msgstr "Conseils nutritionnels"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_product_template__eki_packaging
+msgid "Packaging"
+msgstr "Emballage"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_eki_product_labels__pictogram
+msgid "Pictogram"
+msgstr "Pictogramme"
+
+#. module: eki_base
+#: model_terms:ir.ui.view,arch_db:eki_base.eki_product_labels_form
+msgid "Product Allergens"
+msgstr "Allergènes du produit"
+
+#. module: eki_base
+#: model:ir.model,name:eki_base.model_product_template
+msgid "Product Template"
+msgstr "Modèle d'article"
+
+#. module: eki_base
+#: model_terms:ir.ui.view,arch_db:eki_base.eki_product_allergens_search
+#: model_terms:ir.ui.view,arch_db:eki_base.eki_product_allergens_tree
+msgid "Products allergens"
+msgstr "Allergènes du produit"
+
+#. module: eki_base
+#: model_terms:ir.ui.view,arch_db:eki_base.eki_product_labels_search
+#: model_terms:ir.ui.view,arch_db:eki_base.eki_product_labels_tree
+msgid "Products labels"
+msgstr "Labels des produits"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_product_template__eki_supplier_information
+msgid "Supplier Information"
+msgstr "Infos producteur"
+
+#. module: eki_base
+#: model:ir.model.fields,field_description:eki_base.field_product_template__eki_use
+msgid "Utilisation"
+msgstr "Utilisation"

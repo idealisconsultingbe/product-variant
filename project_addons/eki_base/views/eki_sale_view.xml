@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <menuitem action="eki_product_allergens_action" id="menu_eki_product_allergens_action" parent="sale_management.menu_product_settings" sequence="10"/>
+        <menuitem action="eki_product_labels_action" id="menu_eki_product_labels_action" parent="sale_management.menu_product_settings" sequence="11"/>
+
+
+    </data>
+</odoo>

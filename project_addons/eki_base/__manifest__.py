@@ -31,9 +31,15 @@ Ekivrac Module
 Main module
         """,
     'depends': [
-
+        'product',
+        'sale',
+        'sale_management'
     ],
     'data': [
+        'views/eki_product_view.xml',
+        'views/eki_sale_view.xml',
+
+        'security/ir.model.access.csv',
     ],
     'qweb': [
     ],
