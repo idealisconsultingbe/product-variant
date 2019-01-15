@@ -20,12 +20,25 @@
 #
 ##############################################################################
 
-from odoo import api, fields, models
+{
+    'name': 'Ekivrac Purchase',
+    'category': 'Ekivrac',
+    'version': '1.0',
+    'website': 'https://www.idealisconsulting.com/',
+    'description': """
+Ekivrac Module
 
-
-class EkiResPartner(models.Model):
-    _inherit = "res.partner"
-
-    eki_time_order_purchase = fields.Text(string='Moment for order purchase')
-    eki_time_delivery = fields.Text(string='Moment for delivery')
-    eki_franco = fields.Float(string="Franco", help='Minimum amount to achieve to validate the order')
+Purchase Module
+        """,
+    'depends': [
+        'purchase',
+    ],
+    'data': [
+    ],
+    'qweb': [
+    ],
+    'demo': [
+    ],
+    'installable': True,
+    'application': True,
+}
