@@ -23,9 +23,22 @@
 from odoo import api, fields, models
 
 
-class EkiResPartner(models.Model):
-    _inherit = "res.partner"
+class EkiProductTemplate(models.Model):
+    _inherit = "purchase.order"
 
-    eki_time_order_purchase = fields.Text(string='Moment for order purchase')
-    eki_time_delivery = fields.Text(string='Moment for delivery')
-    eki_franco = fields.Float(string="Franco", help='Minimum amount to achieve to validate the order')
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        if self.partner_id:
+            now = fields.Datetime.now()
+            supplier_infos = self.env['product.supplierinfo'].search([('name', '=', self.partner_id.id), '|', '&', ('date_start', '<', now), ('date_end', '>', now), '&', ('date_start', '=', False), ('date_end', '=', False)])
+            for supplier_info in supplier_infos:
+                self.update({
+                    'order_line': [(0, 0, {
+                        'name': supplier_info.product_id.name,
+                        'product_id': supplier_info.product_id.id,
+                        'product_uom_qty': 0,
+                        'product_uom': supplier_info.product_id.uom_id.id,
+                        'price_unit': supplier_info.product_id.list_price,
+                    })]
+                })
+

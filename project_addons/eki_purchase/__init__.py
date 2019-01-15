@@ -20,12 +20,4 @@
 #
 ##############################################################################
 
-from odoo import api, fields, models
-
-
-class EkiResPartner(models.Model):
-    _inherit = "res.partner"
-
-    eki_time_order_purchase = fields.Text(string='Moment for order purchase')
-    eki_time_delivery = fields.Text(string='Moment for delivery')
-    eki_franco = fields.Float(string="Franco", help='Minimum amount to achieve to validate the order')
+from . import models
