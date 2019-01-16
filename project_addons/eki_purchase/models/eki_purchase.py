@@ -31,17 +31,19 @@ class EkiPurchaseOrder(models.Model):
     def _onchange_partner_id(self):
         if self.partner_id:
             now = fields.Datetime.now()
-            supplier_infos = self.env['product.supplierinfo'].search([('name', '=', self.partner_id.id), '|', '&', ('date_start', '<', now), ('date_end', '>', now), '&', ('date_start', '=', False), ('date_end', '=', False)])
+            values = []
+            supplier_infos = self.env['product.supplierinfo'].search([('name', '=', self.partner_id.id), '|', '&', ('date_start', '<=', now), ('date_end', '>=', now), '&', ('date_start', '=', False), ('date_end', '=', False)])
             for supplier_info in supplier_infos:
-                self.update({
-                    'order_line': [(0, 0, {
-                        'name': supplier_info.product_id.name,
-                        'product_id': supplier_info.product_id.id,
+                product = supplier_info.product_id if supplier_info.product_id else supplier_info.product_tmpl_id.product_variant_id
+                values.append({
+                        'name': product.name,
+                        'product_id': product.id,
                         'product_uom_qty': 0,
-                        'product_uom': supplier_info.product_id.uom_id.id,
-                        'price_unit': supplier_info.product_id.list_price,
-                    })]
-                })
+                        'product_uom': supplier_info.product_uom.id,
+                        'price_unit': product.list_price,
+                        'date_planned': now,
+                    })
+            self.update({'order_line': values})
 
 
 class EkiPurchaseOrderLine(models.Model):
