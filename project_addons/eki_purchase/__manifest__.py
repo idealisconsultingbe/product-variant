@@ -21,26 +21,20 @@
 ##############################################################################
 
 {
-    'name': 'Ekivrac Base',
+    'name': 'Ekivrac Purchase',
     'category': 'Ekivrac',
     'version': '1.0',
     'website': 'https://www.idealisconsulting.com/',
     'description': """
 Ekivrac Module
 
-Main module
+Purchase Module
         """,
     'depends': [
-        'product',
-        'sale',
-        'sale_management'
+        'purchase',
     ],
     'data': [
-        'views/eki_partner_view.xml',
-        'views/eki_product_view.xml',
-        'views/eki_sale_view.xml',
-
-        'security/ir.model.access.csv',
+        'views/eki_purchase_view.xml',
     ],
     'qweb': [
     ],

@@ -20,32 +20,5 @@
 #
 ##############################################################################
 
-{
-    'name': 'Ekivrac Base',
-    'category': 'Ekivrac',
-    'version': '1.0',
-    'website': 'https://www.idealisconsulting.com/',
-    'description': """
-Ekivrac Module
-
-Main module
-        """,
-    'depends': [
-        'product',
-        'sale',
-        'sale_management'
-    ],
-    'data': [
-        'views/eki_partner_view.xml',
-        'views/eki_product_view.xml',
-        'views/eki_sale_view.xml',
-
-        'security/ir.model.access.csv',
-    ],
-    'qweb': [
-    ],
-    'demo': [
-    ],
-    'installable': True,
-    'application': True,
-}
+from . import eki_partner
+from . import eki_product

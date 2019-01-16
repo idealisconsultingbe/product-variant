@@ -20,32 +20,12 @@
 #
 ##############################################################################
 
-{
-    'name': 'Ekivrac Base',
-    'category': 'Ekivrac',
-    'version': '1.0',
-    'website': 'https://www.idealisconsulting.com/',
-    'description': """
-Ekivrac Module
+from odoo import api, fields, models
 
-Main module
-        """,
-    'depends': [
-        'product',
-        'sale',
-        'sale_management'
-    ],
-    'data': [
-        'views/eki_partner_view.xml',
-        'views/eki_product_view.xml',
-        'views/eki_sale_view.xml',
 
-        'security/ir.model.access.csv',
-    ],
-    'qweb': [
-    ],
-    'demo': [
-    ],
-    'installable': True,
-    'application': True,
-}
+class EkiResPartner(models.Model):
+    _inherit = "res.partner"
+
+    eki_time_order_purchase = fields.Text(string='Moment for order purchase')
+    eki_time_delivery = fields.Text(string='Moment for delivery')
+    eki_franco = fields.Float(string="Franco", help='Minimum amount to achieve to validate the order')
