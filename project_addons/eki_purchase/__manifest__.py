@@ -31,10 +31,12 @@ Ekivrac Module
 Purchase Module
         """,
     'depends': [
+        'point_of_sale',
         'purchase',
     ],
     'data': [
         'views/eki_purchase_view.xml',
+        'views/eki_res_config_settings_view.xml',
     ],
     'qweb': [
     ],

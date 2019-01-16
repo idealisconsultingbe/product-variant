@@ -20,7 +20,10 @@
 #
 ##############################################################################
 
-from . import eki_pos_order
-from . import eki_purchase
-from . import eki_res_company
-from . import eki_res_config_settings
+from odoo import api, fields, models
+
+
+class EkiPosOrderLine(models.Model):
+    _inherit = "pos.order.line"
+
+    eki_date_order = fields.Datetime(string="Date Order", related="order_id.date_order")

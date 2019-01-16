@@ -20,7 +20,10 @@
 #
 ##############################################################################
 
-from . import eki_pos_order
-from . import eki_purchase
-from . import eki_res_company
-from . import eki_res_config_settings
+from odoo import api, fields, models
+
+
+class ResConfigSettings(models.TransientModel):
+    _inherit = 'res.config.settings'
+
+    eki_show_days_sales_po = fields.Integer(string="Show nbre days sales on PO lines", related="company_id.eki_show_days_sales_po", readonly=False)
