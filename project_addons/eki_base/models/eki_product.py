@@ -67,3 +67,5 @@ class EkiProductTemplate(models.Model):
 
     eki_is_return = fields.Boolean(string="Returns", related="categ_id.eki_is_return")
 
+    eki_return = fields.Many2one('product.template', domain=[('eki_is_return', '=', True)])
+

@@ -15,6 +15,7 @@
                             <field name="eki_conservation"/>
                             <field name="eki_internal_notes"/>
                             <field name="eki_product_allergens_ids" widget="many2many_tags" />
+                            <field name="eki_return"/>
                         </group>
                         <group>
                             <field name="eki_use"/>
