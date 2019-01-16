@@ -21,3 +21,4 @@
 ##############################################################################
 
 from . import eki_purchase
+from . import eki_stock_rule
