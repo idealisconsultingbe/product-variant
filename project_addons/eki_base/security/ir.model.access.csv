@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_eki_product_allergens,access_eki_product_allergens,eki_base.model_eki_product_allergens,,1,1,1,1
+access_eki_product_labels,access_eki_product_labels,eki_base.model_eki_product_labels,,1,1,1,1
+

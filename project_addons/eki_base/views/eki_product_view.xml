@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="eki_base_product_template_form_view" model="ir.ui.view">
+            <field name="name">eki.base.product.template.form.view</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='general_information']/group[1]" position="after">
+                    <group name="pos" string="Ekivrac Information">
+                        <group>
+                            <field name="eki_brand"/>
+                            <field name="eki_packaging"/>
+                            <field name="eki_ingredient"/>
+                            <field name="eki_conservation"/>
+                            <field name="eki_internal_notes"/>
+                            <field name="eki_product_allergens_ids" widget="many2many_tags" />
+                        </group>
+                        <group>
+                            <field name="eki_use"/>
+                            <field name="eki_supplier_information"/>
+                            <field name="eki_nutritional_values"/>
+                            <field name="eki_nutritional_advise"/>
+                            <field name="eki_ldap"/>
+                            <field name="eki_product_labels_ids" widget="many2many_tags" options="{'no_create':True, 'no_create_edit': False}"/>
+
+                        </group>
+                    </group>
+                </xpath>
+
+                <xpath expr="//field[@name='to_weight']" position="after">
+                    <field name="eki_is_tactile_sale"/>
+                    <field name="eki_has_tare"/>
+                    <field name="eki_available_on_pos_caterer"/>
+                </xpath>
+
+            </field>
+        </record>
+
+
+        <!--
+        *****************
+        Product Allergens
+        *****************
+        -->
+        <record id="eki_product_allergens_tree" model="ir.ui.view">
+            <field name="name">eki.product.allergens.tree</field>
+            <field name="model">eki.product.allergens</field>
+            <field name="arch" type="xml">
+                <tree string="Products allergens" editable="top">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="eki_product_allergens_search" model="ir.ui.view">
+            <field name="name">eki.product.allergens.search</field>
+            <field name="model">eki.product.allergens</field>
+            <field name="arch" type="xml">
+                <search string="Products allergens">
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="eki_product_allergens_action" model="ir.actions.act_window">
+            <field name="name">Allergens</field>
+            <field name="res_model">eki.product.allergens</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="eki_product_allergens_tree"/>
+            <field name="search_view_id" ref="eki_product_allergens_search"/>
+        </record>
+
+        <!--
+        **************
+        Product Labels
+        **************
+        -->
+
+        <record id="eki_product_labels_form" model="ir.ui.view">
+            <field name="name">eki.product.labels.form</field>
+            <field name="model">eki.product.labels</field>
+            <field name="arch" type="xml">
+                <form string="Product Allergens">
+                    <header>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="pictogram" widget="image"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="eki_product_labels_tree" model="ir.ui.view">
+            <field name="name">eki.product.labels.tree</field>
+            <field name="model">eki.product.labels</field>
+            <field name="arch" type="xml">
+                <tree string="Products labels">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="eki_product_labels_search" model="ir.ui.view">
+            <field name="name">eki.product.labels.search</field>
+            <field name="model">eki.product.labels</field>
+            <field name="arch" type="xml">
+                <search string="Products labels">
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="eki_product_labels_action" model="ir.actions.act_window">
+            <field name="name">Labels</field>
+            <field name="res_model">eki.product.labels</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="eki_product_labels_tree"/>
+            <field name="search_view_id" ref="eki_product_labels_search"/>
+        </record>
+
+    </data>
+</odoo>
