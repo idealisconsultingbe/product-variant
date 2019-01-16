@@ -37,6 +37,29 @@
             </field>
         </record>
 
+        <!--
+        *****************
+        Product Category
+        *****************
+        -->
+        <record id="eki_base_product_category_form_view" model="ir.ui.view">
+            <field name="name">eki.base.product.category.form.view</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/group[1]" position="after">
+                    <group name="pos" string="Ekivrac Information">
+                        <group>
+                            <field name="eki_is_price_change_continuously"/>
+                        </group>
+                        <group>
+                            <field name="eki_is_return"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
 
         <!--
         *****************
