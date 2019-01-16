@@ -23,7 +23,7 @@
 from odoo import api, fields, models
 
 
-class EkiProductTemplate(models.Model):
+class EkiPurchaseOrder(models.Model):
     _inherit = "purchase.order"
 
     @api.onchange('partner_id')
@@ -42,3 +42,18 @@ class EkiProductTemplate(models.Model):
                     })]
                 })
 
+
+class EkiPurchaseOrderLine(models.Model):
+    _inherit = "purchase.order.line"
+
+    eki_is_product_under_min_stock = fields.Boolean(string='Product under min stock', compute='_compute_product_under_min_stock')
+
+    @api.one
+    def _compute_product_under_min_stock(self):
+        order_points = self.env['stock.warehouse.orderpoint'].search([('product_id', '=', self.product_id.id)])
+        for order_point in order_points:
+            if order_point.product_min_qty > self.product_id.qty_available:
+                self.eki_is_product_under_min_stock = True
+                return
+
+        self.eki_is_product_under_min_stock = False

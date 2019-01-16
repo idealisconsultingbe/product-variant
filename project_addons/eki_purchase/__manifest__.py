@@ -34,6 +34,7 @@ Purchase Module
         'purchase',
     ],
     'data': [
+        'views/eki_purchase_view.xml',
     ],
     'qweb': [
     ],
