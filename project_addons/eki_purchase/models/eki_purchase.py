@@ -95,6 +95,6 @@ class EkiPurchaseOrderLine(models.Model):
         now = fields.Datetime.now()
         start_date = now - datetime.timedelta(days=self.env.user.company_id.eki_show_days_sales_po)
         pos_order_lines = self.env['pos.order.line'].search([('product_id', '=', self.product_id.id), ('eki_date_order', '<', now), ('eki_date_order', '>', start_date)])
-        self.eki_product_sales_x_days = len(pos_order_lines)
-
-
+        self.eki_product_sales_x_days = 0
+        for pos_order_line in pos_order_lines:
+            self.eki_product_sales_x_days += pos_order_line.qty
