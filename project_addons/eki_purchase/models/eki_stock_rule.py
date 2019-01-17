@@ -96,7 +96,7 @@ class EkiStockRule(models.Model):
             self.env['purchase.order.line'].sudo().create(vals)
 
     # WARNING! BReaking the standard HUGE impact.
-    # Every PO line created from the scheduler or from an SO (make to order) will not add its qty but overwrite the existing one.
+    # The behavior when creating a PO line created from the scheduler or from an SO could change.
     def _update_purchase_order_line(self, product_id, product_qty, product_uom, values, line, partner):
         res = super(EkiStockRule, self)._update_purchase_order_line(product_id, product_qty, product_uom, values, line, partner)
         stock_warehouse_orderpoint = self.env['stock.warehouse.orderpoint'].search([('product_id', '=', product_id.id), ('product_min_qty', '>', product_id.virtual_available)], order="product_min_qty", limit=1)
