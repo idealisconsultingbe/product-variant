@@ -20,29 +20,10 @@
 #
 ##############################################################################
 
-{
-    'name': 'Ekivrac Purchase',
-    'category': 'Ekivrac',
-    'version': '1.0',
-    'website': 'https://www.idealisconsulting.com/',
-    'description': """
-Ekivrac Module
+from odoo import api, fields, models
 
-Purchase Module
-        """,
-    'depends': [
-        'point_of_sale',
-        'purchase',
-        'purchase_stock',
-    ],
-    'data': [
-        'views/eki_purchase_view.xml',
-        'views/eki_res_config_settings_view.xml',
-    ],
-    'qweb': [
-    ],
-    'demo': [
-    ],
-    'installable': True,
-    'application': True,
-}
+
+class EkiPosOrderLine(models.Model):
+    _inherit = "pos.order.line"
+
+    eki_date_order = fields.Datetime(string="Date Order", related="order_id.date_order")

@@ -21,6 +21,7 @@
 ##############################################################################
 
 from odoo import api, fields, models
+import datetime
 
 
 class EkiPurchaseOrder(models.Model):
@@ -50,6 +51,8 @@ class EkiPurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
     eki_is_product_under_min_stock = fields.Boolean(string='Product under min stock', compute='_compute_product_under_min_stock')
+    eki_product_qty_available = fields.Float(string='Available quantity', related='product_id.qty_available', readonly=True)
+    eki_product_sales_x_days = fields.Integer(string='Sales last days', compute='_compute_eki_product_sales_x_days', readonly=True)
 
     @api.one
     def _compute_product_under_min_stock(self):
@@ -60,3 +63,10 @@ class EkiPurchaseOrderLine(models.Model):
                 return
 
         self.eki_is_product_under_min_stock = False
+
+    @api.one
+    def _compute_eki_product_sales_x_days(self):
+        now = fields.Datetime.now()
+        start_date = now - datetime.timedelta(days=self.env.user.company_id.eki_show_days_sales_po)
+        pos_order_lines = self.env['pos.order.line'].search([('product_id', '=', self.product_id.id), ('eki_date_order', '<', now), ('eki_date_order', '>', start_date)])
+        self.eki_product_sales_x_days = len(pos_order_lines)

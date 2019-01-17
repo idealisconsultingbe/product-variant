@@ -38,6 +38,13 @@ class EkiProductLabels(models.Model):
     pictogram = fields.Binary("Pictogram", attachment=True, required=True)
 
 
+class EkiProductCategory(models.Model):
+    _inherit = "product.category"
+
+    eki_is_price_change_continuously = fields.Boolean(string="Price change continuously")
+    eki_is_return = fields.Boolean(string="Return")
+
+
 class EkiProductTemplate(models.Model):
     _inherit = "product.template"
 
@@ -57,3 +64,8 @@ class EkiProductTemplate(models.Model):
     eki_is_tactile_sale = fields.Boolean(string="Is for tactile sale")
     eki_has_tare = fields.Boolean(string="Has tare")
     eki_available_on_pos_caterer = fields.Boolean(string="Available on PoS caterer")
+
+    eki_is_return = fields.Boolean(string="Returns", related="categ_id.eki_is_return")
+
+    eki_return = fields.Many2one('product.template', domain=[('eki_is_return', '=', True)])
+
