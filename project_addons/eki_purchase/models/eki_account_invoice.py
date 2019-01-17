@@ -20,10 +20,12 @@
 #
 ##############################################################################
 
-from . import eki_account_invoice
-from . import eki_pos_order
-from . import eki_product
-from . import eki_purchase
-from . import eki_res_company
-from . import eki_res_config_settings
-from . import eki_stock_rule
+from odoo import api, fields, models
+
+class EkiAccountInvoice(models.Model):
+    _inherit = "account.invoice"
+
+    def _prepare_invoice_line_from_po_line(self, line):
+        data = super(EkiAccountInvoice, self)._prepare_invoice_line_from_po_line(line)
+        data.update({'discount': line.eki_discount})
+        return data

@@ -20,10 +20,11 @@
 #
 ##############################################################################
 
-from . import eki_account_invoice
-from . import eki_pos_order
-from . import eki_product
-from . import eki_purchase
-from . import eki_res_company
-from . import eki_res_config_settings
-from . import eki_stock_rule
+from odoo import api, fields, models
+from odoo.addons import decimal_precision as dp
+
+
+class EkiSupplierInfo(models.Model):
+    _inherit = "product.supplierinfo"
+
+    eki_discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), default=0.0)

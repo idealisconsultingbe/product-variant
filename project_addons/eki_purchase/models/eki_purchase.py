@@ -20,7 +20,9 @@
 #
 ##############################################################################
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
+from odoo.addons import decimal_precision as dp
 import datetime
 
 
@@ -53,6 +55,30 @@ class EkiPurchaseOrderLine(models.Model):
     eki_is_product_under_min_stock = fields.Boolean(string='Product under min stock', compute='_compute_product_under_min_stock')
     eki_product_qty_available = fields.Float(string='Available quantity', related='product_id.qty_available', readonly=True)
     eki_product_sales_x_days = fields.Integer(string='Sales last days', compute='_compute_eki_product_sales_x_days', readonly=True)
+    eki_discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), compute='_compute_amount')
+
+    @api.depends('product_id.seller_ids', 'product_qty', 'price_unit', 'taxes_id')
+    def _compute_amount(self):
+        for line in self:
+            if not line.product_id.eki_is_return:
+                supplier = line.order_id.partner_id
+                supplier_info = line.product_id.seller_ids.filtered(lambda x:x.name.id == supplier.id)
+                if len(supplier_info.ids) > 1:
+                    raise UserError(_("The product %s (#%s) has two lines for the same supplier (%s)." %(line.product_id.name, line.product_id.id, supplier.name)))
+                line.eki_discount = supplier_info.eki_discount if supplier_info else 0.0
+            vals = line._prepare_compute_all_values()
+            vals['price_unit'] = vals['price_unit'] * (1 - (line.eki_discount or 0.0) / 100.0)
+            taxes = line.taxes_id.compute_all(
+                vals['price_unit'],
+                vals['currency_id'],
+                vals['product_qty'],
+                vals['product'],
+                vals['partner'])
+            line.update({
+                'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
+                'price_total': taxes['total_included'],
+                'price_subtotal': taxes['total_excluded'],
+            })
 
     @api.one
     def _compute_product_under_min_stock(self):
@@ -70,3 +96,5 @@ class EkiPurchaseOrderLine(models.Model):
         start_date = now - datetime.timedelta(days=self.env.user.company_id.eki_show_days_sales_po)
         pos_order_lines = self.env['pos.order.line'].search([('product_id', '=', self.product_id.id), ('eki_date_order', '<', now), ('eki_date_order', '>', start_date)])
         self.eki_product_sales_x_days = len(pos_order_lines)
+
+

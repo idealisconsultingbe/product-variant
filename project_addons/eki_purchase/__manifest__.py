@@ -36,6 +36,7 @@ Purchase Module
         'purchase_stock',
     ],
     'data': [
+        'views/eki_product_view.xml',
         'views/eki_purchase_view.xml',
         'views/eki_res_config_settings_view.xml',
     ],
