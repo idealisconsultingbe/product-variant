@@ -20,6 +20,7 @@
 #
 ##############################################################################
 
+from . import eki_stock_rule
 from . import eki_pos_order
 from . import eki_purchase
 from . import eki_res_company

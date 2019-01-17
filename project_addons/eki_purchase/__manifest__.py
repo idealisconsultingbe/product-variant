@@ -33,6 +33,7 @@ Purchase Module
     'depends': [
         'point_of_sale',
         'purchase',
+        'purchase_stock',
     ],
     'data': [
         'views/eki_purchase_view.xml',
