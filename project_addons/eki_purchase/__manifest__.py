@@ -32,6 +32,7 @@ Purchase Module
         """,
     'depends': [
         'purchase',
+        'purchase_stock',
     ],
     'data': [
         'views/eki_purchase_view.xml',
