@@ -65,7 +65,7 @@ class EkiProductTemplate(models.Model):
     eki_has_tare = fields.Boolean(string="Has tare")
     eki_available_on_pos_caterer = fields.Boolean(string="Available on PoS caterer")
 
-    eki_is_return = fields.Boolean(string="Returns", related="categ_id.eki_is_return")
+    eki_is_return = fields.Boolean(string="Returns", related="categ_id.eki_is_return", readonly=True)
 
     eki_return = fields.Many2one('product.template', domain=[('eki_is_return', '=', True)])
 
