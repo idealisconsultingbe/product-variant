@@ -45,7 +45,7 @@ class EkiPurchaseOrder(models.Model):
                             'product_id': product.id,
                             'product_qty': 0,
                             'product_uom': supplier_info.product_uom.id,
-                            'price_unit': product.list_price,
+                            'price_unit': product.price,
                             'date_planned': now,
                         })
             self.update({'order_line': values})
