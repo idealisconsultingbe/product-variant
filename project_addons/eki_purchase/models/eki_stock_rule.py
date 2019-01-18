@@ -43,7 +43,7 @@ class EkiStockRule(models.Model):
                                 'product_id': product.id,
                                 'product_qty': 0,
                                 'product_uom': supplier_info.product_uom.id,
-                                'price_unit': product.list_price,
+                                'price_unit': supplier_info.price,
                                 'date_planned': now,
                                 'order_id': po.id}
                         po.env['purchase.order.line'].sudo().create(vals)
