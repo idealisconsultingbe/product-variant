@@ -17,7 +17,7 @@
                         <div class="o_setting_right_pane">
                             <label for="eki_show_days_sales_po"/>
                             <div class="text-muted">
-                                Show the sales oof the product on the PO line for the X days.
+                                Show on the Po line, the sales that have been made for the product during the past X days
                             </div>
                         </div>
                     </div>
