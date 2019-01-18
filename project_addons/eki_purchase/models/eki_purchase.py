@@ -61,10 +61,10 @@ class EkiPurchaseOrderLine(models.Model):
     def _compute_amount(self):
         for line in self:
             if not line.product_id.eki_is_return:
+                now = fields.Datetime.now()
                 supplier = line.order_id.partner_id
-                supplier_info = line.product_id.seller_ids.filtered(lambda x:x.name.id == supplier.id)
-                if len(supplier_info.ids) > 1:
-                    raise UserError(_("The product %s (#%s) has two lines for the same supplier (%s)." %(line.product_id.name, line.product_id.id, supplier.name)))
+                supplier_info = line.product_id.seller_ids.filtered(lambda x:x.name.id == supplier.id and x.min_qty <= line.product_qty and ((x.date_start == False or x.date_start <= now) and (x.date_end == False or x.date_end >= now)))
+                supplier_info = supplier_info.search([], order="min_qty desc", limit=1)
                 line.eki_discount = supplier_info.eki_discount if supplier_info else 0.0
             vals = line._prepare_compute_all_values()
             vals['price_unit'] = vals['price_unit'] * (1 - (line.eki_discount or 0.0) / 100.0)
