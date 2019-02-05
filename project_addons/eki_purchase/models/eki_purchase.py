@@ -34,18 +34,20 @@ class EkiPurchaseOrder(models.Model):
         if self.partner_id:
             now = fields.Datetime.now()
             values = []
+            product_in_values = []
             supplier_infos = self.env['product.supplierinfo'].search([('name', '=', self.partner_id.id), '|', '&', ('date_start', '<=', now), ('date_end', '>=', now), '&', ('date_start', '=', False), ('date_end', '=', False)])
             for supplier_info in supplier_infos:
                 product = supplier_info.product_id if supplier_info.product_id else supplier_info.product_tmpl_id.product_variant_id
-                if product:
-                    values.append((0,0,{
+                if product and product.id not in product_in_values:
+                    product_in_values.append(product.id)
+                    values.append({
                             'name': product.name,
                             'product_id': product.id,
                             'product_qty': 0,
                             'product_uom': supplier_info.product_uom.id,
-                            'price_unit': product.list_price,
+                            'price_unit': product.price,
                             'date_planned': now,
-                        }))
+                        })
             self.update({'order_line': values})
 
 
@@ -61,11 +63,11 @@ class EkiPurchaseOrderLine(models.Model):
     def _compute_amount(self):
         for line in self:
             if not line.product_id.eki_is_return:
+                now = fields.Datetime.now()
                 supplier = line.order_id.partner_id
-                supplier_info = line.product_id.seller_ids.filtered(lambda x:x.name.id == supplier.id)
-                if len(supplier_info.ids) > 1:
-                    raise UserError(_("The product %s (#%s) has two lines for the same supplier (%s)." %(line.product_id.name, line.product_id.id, supplier.name)))
-                line.eki_discount = supplier_info.eki_discount if supplier_info else 0.0
+                supplier_info = line.product_id.seller_ids.filtered(lambda x:x.name.id == supplier.id and x.min_qty <= line.product_qty and ((x.date_start == False or x.date_start <= now) and (x.date_end == False or x.date_end >= now)))
+                supplier_info = supplier_info.sorted(lambda x: x.min_qty, reverse=True)
+                line.eki_discount = supplier_info[0].eki_discount if supplier_info else 0.0
             vals = line._prepare_compute_all_values()
             vals['price_unit'] = vals['price_unit'] * (1 - (line.eki_discount or 0.0) / 100.0)
             taxes = line.taxes_id.compute_all(

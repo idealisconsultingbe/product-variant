@@ -26,4 +26,4 @@ from odoo import api, fields, models
 class EkiResCompany(models.Model):
     _inherit = 'res.company'
 
-    eki_show_days_sales_po = fields.Integer(string="Show nbre days sales on PO lines")
+    eki_show_days_sales_po = fields.Integer(string="Show sales X days on PO lines")

@@ -26,4 +26,4 @@ from odoo import api, fields, models
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
-    eki_show_days_sales_po = fields.Integer(string="Show nbre days sales on PO lines", related="company_id.eki_show_days_sales_po", readonly=False)
+    eki_show_days_sales_po = fields.Integer(string="Show sales X days on PO lines", related="company_id.eki_show_days_sales_po", readonly=False)
