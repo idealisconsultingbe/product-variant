@@ -26,6 +26,42 @@ from odoo.exceptions import UserError, ValidationError
 class EkiAccountInvoice(models.Model):
     _inherit = "account.invoice"
 
+    def adapt_supplierinfo(self):
+        product_supplierinfo_obj = self.env['product.supplierinfo']
+        # For each invoice, we look for product_supplierinfo with same partner/product key
+        for invoice in self:
+            for invoice_line in invoice.invoice_line_ids:
+                supplierinfos = product_supplierinfo_obj.search([('name', '=', invoice.partner_id.id),
+                                                                ('product_id', '=', invoice_line.product_id.id)])
+                if supplierinfos:
+                    # If we found only one supplierinfo, we apply the logic on it
+                    if len(supplierinfos) == 1:
+                        # If the price is different, then we put the flag on and adapt the last price field
+                        if supplierinfos.price != invoice_line.price_unit:
+                            supplierinfos.write({
+                                'eki_last_supplier_price': invoice_line.price_unit,
+                                'eki_price_has_changed': True})
+                    # If we fond more than 1 supplierinfo, we need to get the last one
+                    elif len(supplierinfos) > 1:
+                        lastsupplierinfo = None
+                        for supplierinfo in supplierinfos:
+                            # In the logic, we always state that if date_to is not filled, then it's the last one
+                            if not supplierinfo or not supplierinfo.date_to:
+                                lastsupplierinfo = supplierinfo
+
+                            elif not lastsupplierinfo.date_to:
+                                    break
+                            else:
+                                # If we need to compare two suppliers info based on date,
+                                # the one with the bigger date_to is chose
+                                if supplierinfo.date_to > lastsupplierinfo.date_to:
+                                    lastsupplierinfo = supplierinfo
+
+                        if lastsupplierinfo.price != invoice_line.price_unit:
+                            supplierinfos.write({
+                                'eki_last_supplier_price': invoice_line.price_unit,
+                                'eki_price_has_changed': True})
+
     def action_invoice_open(self):
         for invoice in self.filtered(lambda x: x.type == 'in_invoice'):
             # For each invoice, we search another invoice (supplier) with the same reference.
@@ -35,4 +71,8 @@ class EkiAccountInvoice(models.Model):
                                ('partner_id', '=', invoice.partner_id.id)]):
                 raise UserError(_('This reference is already used by another Vendor Bill'))
 
-        return super(EkiAccountInvoice, self).action_invoice_open()
+        res = super(EkiAccountInvoice, self).action_invoice_open()
+
+        self.adapt_supplierinfo()
+
+        return res

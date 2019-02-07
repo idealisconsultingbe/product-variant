@@ -36,6 +36,7 @@ Account Module
     ],
     'data': [
             'views/eki_account_invoice_views.xml',
+            'views/eki_product_supplierinfo_views.xml',
     ],
     'qweb': [
     ],
