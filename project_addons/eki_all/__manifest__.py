@@ -21,25 +21,22 @@
 ##############################################################################
 
 {
-    'name': 'Ekivrac Purchase',
+    'name': 'Ekivrac all',
     'category': 'Ekivrac',
     'version': '1.0',
     'website': 'https://www.idealisconsulting.com/',
     'description': """
 Ekivrac Module
 
-Purchase Module
+All module installation
         """,
     'depends': [
-        'point_of_sale',
-        'purchase',
-        'purchase_stock',
-        'account',
+        'base',
+        'eki_base',
+        'eki_purchase',
     ],
     'data': [
-        'views/eki_product_view.xml',
-        'views/eki_purchase_view.xml',
-        'views/eki_res_config_settings_view.xml',
+
     ],
     'qweb': [
     ],

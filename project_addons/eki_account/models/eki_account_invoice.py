@@ -20,31 +20,19 @@
 #
 ##############################################################################
 
-{
-    'name': 'Ekivrac Purchase',
-    'category': 'Ekivrac',
-    'version': '1.0',
-    'website': 'https://www.idealisconsulting.com/',
-    'description': """
-Ekivrac Module
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError, ValidationError
 
-Purchase Module
-        """,
-    'depends': [
-        'point_of_sale',
-        'purchase',
-        'purchase_stock',
-        'account',
-    ],
-    'data': [
-        'views/eki_product_view.xml',
-        'views/eki_purchase_view.xml',
-        'views/eki_res_config_settings_view.xml',
-    ],
-    'qweb': [
-    ],
-    'demo': [
-    ],
-    'installable': True,
-    'application': True,
-}
+class EkiAccountInvoice(models.Model):
+    _inherit = "account.invoice"
+
+    def action_invoice_open(self):
+        for invoice in self.filtered(lambda x: x.type == 'in_invoice'):
+            # For each invoice, we search another invoice (supplier) with the same reference.
+            # If we found one based on the criteria, then we raise an error to the user
+            if invoice.search([('id', '!=', invoice.id), ('reference', '=', invoice.reference),
+                               ('state', 'not in', ('draft', 'cancel')),
+                               ('partner_id', '=', invoice.partner_id.id)]):
+                raise UserError(_('This reference is already used by another Vendor Bill'))
+
+        return super(EkiAccountInvoice, self).action_invoice_open()
