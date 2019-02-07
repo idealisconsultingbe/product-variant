@@ -20,12 +20,28 @@
 #
 ##############################################################################
 
-from odoo import api, fields, models
-from odoo.addons import decimal_precision as dp
+{
+    'name': 'Ekivrac Account',
+    'category': 'Ekivrac',
+    'version': '1.0',
+    'website': 'https://www.idealisconsulting.com/',
+    'description': """
+Ekivrac Module
 
+Account Module
+        """,
+    'depends': [
+        'account',
 
-class EkiSupplierInfo(models.Model):
-    _inherit = "product.supplierinfo"
-
-    eki_discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), default=0.0)
-
+    ],
+    'data': [
+            'views/eki_account_invoice_views.xml',
+            'views/eki_product_supplierinfo_views.xml',
+    ],
+    'qweb': [
+    ],
+    'demo': [
+    ],
+    'installable': True,
+    'application': True,
+}
