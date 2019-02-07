@@ -28,7 +28,11 @@ class EkiAccountInvoice(models.Model):
 
     def action_invoice_open(self):
         for invoice in self.filtered(lambda x: x.type == 'in_invoice'):
-            if invoice.search([('id', '!=', invoice.id), ('reference', '=', invoice.reference), ('state', 'not in', ('draft', 'cancel'))]):
+            # For each invoice, we search another invoice (supplier) with the same reference.
+            # If we found one based on the criteria, then we raise an error to the user
+            if invoice.search([('id', '!=', invoice.id), ('reference', '=', invoice.reference),
+                               ('state', 'not in', ('draft', 'cancel')),
+                               ('partner_id', '=', invoice.partner_id.id)]):
                 raise UserError(_('This reference is already used by another Vendor Bill'))
 
         return super(EkiAccountInvoice, self).action_invoice_open()
