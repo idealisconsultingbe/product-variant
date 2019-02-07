@@ -21,20 +21,17 @@
 ##############################################################################
 
 {
-    'name': 'Ekivrac all',
+    'name': 'Ekivrac Stock',
     'category': 'Ekivrac',
     'version': '1.0',
     'website': 'https://www.idealisconsulting.com/',
     'description': """
 Ekivrac Module
 
-All module installation
+Stock Module
         """,
     'depends': [
-        'base',
-        'eki_base',
-        'eki_purchase',
-        'eki_stock',
+        'stock',
     ],
     'data': [
 

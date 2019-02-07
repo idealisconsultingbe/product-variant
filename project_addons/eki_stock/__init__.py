@@ -20,29 +20,4 @@
 #
 ##############################################################################
 
-{
-    'name': 'Ekivrac all',
-    'category': 'Ekivrac',
-    'version': '1.0',
-    'website': 'https://www.idealisconsulting.com/',
-    'description': """
-Ekivrac Module
-
-All module installation
-        """,
-    'depends': [
-        'base',
-        'eki_base',
-        'eki_purchase',
-        'eki_stock',
-    ],
-    'data': [
-
-    ],
-    'qweb': [
-    ],
-    'demo': [
-    ],
-    'installable': True,
-    'application': True,
-}
+from . import models
