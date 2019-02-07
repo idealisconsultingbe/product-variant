@@ -48,6 +48,14 @@ class EkiPurchaseOrder(models.Model):
                         }))
             self.update({'order_line': values})
 
+    @api.multi
+    def button_confirm(self):
+
+        for order in self:
+            if order.partner_id.eki_franco > 0.0 and order.amount_total < order.partner_id.eki_franco:
+                raise UserError(_("The total amount is less than the minimum amount ({} < {}) for the partner {}").format(
+                    order.amount_total, order.partner_id.eki_franco, order.partner_id.name))
+        return super(EkiPurchaseOrder, self).button_confirm()
 
 class EkiPurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
