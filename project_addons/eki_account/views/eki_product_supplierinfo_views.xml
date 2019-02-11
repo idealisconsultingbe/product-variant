@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="eki_product_supplierinfo_form_view" model="ir.ui.view">
-            <field name="name">eki.product.supplierinfo.form.view</field>
+        <record id="eki_product_supplierinfo_tree_view" model="ir.ui.view">
+            <field name="name">eki.product.supplierinfo.tree.view</field>
             <field name="model">product.supplierinfo</field>
             <field name="arch" type="xml">
                 <tree>
@@ -11,6 +11,18 @@
                     <field name="eki_price_has_changed"/>
                     <field name="eki_last_supplier_price"/>
                 </tree>
+            </field>
+        </record>
+
+        <record id="eki_product_supplierinfo_form_view" model="ir.ui.view">
+            <field name="name" >eki.product.supplierinfo.form.view</field>
+            <field name="model">product.supplierinfo</field>
+            <field name="inherit_id" ref="product.product_supplierinfo_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_code']" position="after">
+                    <field name="eki_price_has_changed"/>
+                    <field name="eki_last_supplier_price"/>
+                </xpath>
             </field>
         </record>
 
@@ -33,7 +45,7 @@
             <field name="view_mode">tree,form,kanban</field>
             <field name="view_ids"
                    eval="[(5, 0, 0),
-                      (0, 0, {'view_mode': 'tree', 'view_id' : ref('eki_account.eki_product_supplierinfo_form_view')}),
+                      (0, 0, {'view_mode': 'tree', 'view_id' : ref('eki_account.eki_product_supplierinfo_tree_view')}),
                       (0, 0, {'view_mode': 'form', 'view_id' : False}),
                       (0, 0, {'view_mode': 'kanban', 'view_id': False})]"/>
             <field name="context">{'search_default_eki_price_has_changed': 1}</field>
