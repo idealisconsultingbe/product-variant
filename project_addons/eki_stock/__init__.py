@@ -20,12 +20,4 @@
 #
 ##############################################################################
 
-from odoo import api, fields, models
-from odoo.addons import decimal_precision as dp
-
-
-class EkiSupplierInfo(models.Model):
-    _inherit = "product.supplierinfo"
-
-    eki_discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), default=0.0)
-
+from . import models

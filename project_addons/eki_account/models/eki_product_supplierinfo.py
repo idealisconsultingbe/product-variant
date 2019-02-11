@@ -27,5 +27,22 @@ from odoo.addons import decimal_precision as dp
 class EkiSupplierInfo(models.Model):
     _inherit = "product.supplierinfo"
 
-    eki_discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), default=0.0)
+    @api.multi
+    def _validate_new_price(self):
+        for supplierinfo in self.filtered(lambda x: x.eki_price_has_changed):
+            supplierinfo.write({
+                'price': supplierinfo.eki_last_supplier_price,
+                'eki_last_supplier_price': 0.0,
+                'eki_price_has_changed': False})
+
+    @api.multi
+    def _refuse_new_price(self):
+        for supplierinfo in self.filtered(lambda x: x.eki_price_has_changed):
+            supplierinfo.write({
+                'eki_last_supplier_price': 0.0,
+                'eki_price_has_changed': False})
+
+    eki_last_supplier_price = fields.Float(string='Last Supplier Price')
+    eki_price_has_changed = fields.Boolean(string='Price Change', default=False)
+
 

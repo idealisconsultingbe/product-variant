@@ -20,7 +20,7 @@
 #
 ##############################################################################
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 
@@ -43,10 +43,34 @@ class EkiStockRule(models.Model):
                                 'product_id': product.id,
                                 'product_qty': 0,
                                 'product_uom': supplier_info.product_uom.id,
-                                'price_unit': product.list_price,
+                                'price_unit': supplier_info.price,
                                 'date_planned': now,
                                 'order_id': po.id}
                         po.env['purchase.order.line'].sudo().create(vals)
+                product_to_add = []
+                lines_with_return = po.order_line.filtered(lambda x: x.product_id.eki_return)
+                # If we found some, we add it in the dict
+                for line in lines_with_return:
+                    # We add one line per return product, thus we had to sum on all product with the same eki_return
+                    if line.product_id.eki_return.id not in product_to_add:
+                        line_with_same_return = lines_with_return.filtered(
+                            lambda x: x.product_id.eki_return == line.product_id.eki_return)
+                        qty = sum(x['product_qty'] for x in line_with_same_return)
+                        purchase_return = po.order_line.filtered(
+                            lambda x: x.product_id.id == line.product_id.eki_return.id)
+                        if purchase_return:
+                            purchase_return[0].product_qty = qty
+                        else:
+                            values.append((0, 0, {
+                                'name': line.product_id.eki_return.name,
+                                'product_id': line.product_id.eki_return.id,
+                                'product_qty': qty,
+                                'product_uom': line.product_id.eki_return.uom_po_id.id,
+                                'price_unit': line.product_id.eki_return.price,
+                                'date_planned': fields.Datetime.now(),
+                            }))
+                            product_to_add.append(line.product_id.eki_return.id)
+                po.env['purchase.order.line'].sudo().create(values)
         cache = {}
         suppliers = product_id.seller_ids \
             .filtered(lambda r: (not r.company_id or r.company_id == values['company_id']) and (

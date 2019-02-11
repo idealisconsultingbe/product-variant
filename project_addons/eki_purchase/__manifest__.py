@@ -34,6 +34,7 @@ Purchase Module
         'point_of_sale',
         'purchase',
         'purchase_stock',
+        'account',
     ],
     'data': [
         'views/eki_product_view.xml',

@@ -15,7 +15,8 @@
                             <field name="eki_conservation"/>
                             <field name="eki_internal_notes"/>
                             <field name="eki_product_allergens_ids" widget="many2many_tags" />
-                            <field name="eki_return"/>
+                            <field name="eki_is_return" invisible="1"/>
+                            <field name="eki_return" attrs="{'invisible': [('eki_is_return', '=', True)]}"/>
                         </group>
                         <group>
                             <field name="eki_use"/>

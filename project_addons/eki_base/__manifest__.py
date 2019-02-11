@@ -31,9 +31,12 @@ Ekivrac Module
 Main module
         """,
     'depends': [
+        'stock',
         'product',
         'sale',
-        'sale_management'
+        'sale_management',
+        'sale_purchase',
+        'point_of_sale',
     ],
     'data': [
         'views/eki_partner_view.xml',
