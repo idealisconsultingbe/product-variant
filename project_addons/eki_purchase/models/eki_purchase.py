@@ -47,17 +47,69 @@ class EkiPurchaseOrder(models.Model):
                             'product_uom': supplier_info.product_uom.id,
                             'price_unit': product.price,
                             'date_planned': now,
-                        })
+                    }))
+            # We look forward return to add in the PO based on eki_return field
+            product_to_add = []
+            lines_with_return = self.order_line.filtered(lambda x: x.product_id.eki_return)
+            # If we found some, we add it in the dict
+            for line in lines_with_return:
+                # We add one line per return product, thus we had to sum on all product with the same eki_return
+                if line.product_id.eki_return.id not in product_to_add:
+                    line_with_same_return = lines_with_return.filtered(
+                        lambda x: x.product_id.eki_return == line.product_id.eki_return)
+                    qty = sum(x['product_qty'] for x in line_with_same_return)
+                    purchase_return = self.order_line.filtered(
+                        lambda x: x.product_id.id == line.product_id.eki_return.id)
+                    if purchase_return:
+                        purchase_return[0].product_qty = qty
+                    else:
+                        values.append((0, 0, {
+                            'name': line.product_id.eki_return.name,
+                            'product_id': line.product_id.eki_return.id,
+                            'product_qty': qty,
+                            'product_uom': line.product_id.eki_return.uom_po_id.id,
+                            'price_unit': line.product_id.eki_return.price,
+                            'date_planned': fields.Datetime.now(),
+                        }))
+                        product_to_add.append(line.product_id.eki_return.id)
             self.update({'order_line': values})
 
     @api.multi
     def button_confirm(self):
+    def update_vidange(self):
+        for purchase in self:
+            values = []
+            product_to_add = []
+            # We look for the line with product with eki_return product field
+            lines_with_return = purchase.order_line.filtered(lambda x: x.product_id.eki_return)
+            for line in lines_with_return:
+                # We add one line per eki_return thus we add to sum on all product with the same eki_return
+                if line.product_id.eki_return.id not in product_to_add:
+                    line_with_same_return = lines_with_return.filtered(lambda x: x.product_id.eki_return == line.product_id.eki_return)
+                    qty = sum(x['product_qty'] for x in line_with_same_return)
+                    if purchase_return:
+                        purchase_return = purchase.order_line.filtered(lambda x: x.product_id.id == line.product_id.eki_return.id)
+                        purchase_return[0].product_qty = qty
+                    else:
+                        values.append((0, 0, {
+                                    'name': line.product_id.eki_return.name,
+                                    'product_id': line.product_id.eki_return.id,
+                                    'product_qty': qty,
+                                    'product_uom': line.product_id.eki_return.uom_po_id.id,
+                                    'price_unit': line.product_id.eki_return.price,
+                                    'date_planned': fields.Datetime.now(),
+                                }))
+                        product_to_add.append(line.product_id.eki_return.id)
 
         for order in self:
             if order.partner_id.eki_franco > 0.0 and order.amount_total < order.partner_id.eki_franco:
                 raise UserError(_("The total amount is less than the minimum amount ({} < {}) for the partner {}").format(
                     order.amount_total, order.partner_id.eki_franco, order.partner_id.name))
         return super(EkiPurchaseOrder, self).button_confirm()
+
+            if values:
+                purchase.update({'order_line': values})
+
 
 class EkiPurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
@@ -66,6 +118,7 @@ class EkiPurchaseOrderLine(models.Model):
     eki_product_qty_available = fields.Float(string='Available quantity', related='product_id.qty_available', readonly=True)
     eki_product_sales_x_days = fields.Integer(string='Sales last days', compute='_compute_eki_product_sales_x_days', readonly=True)
     eki_discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), compute='_compute_amount')
+    eki_previous_qty = fields.Float(string='Previous product qty')
 
     @api.depends('product_id.seller_ids', 'product_qty', 'price_unit', 'taxes_id')
     def _compute_amount(self):
@@ -108,3 +161,8 @@ class EkiPurchaseOrderLine(models.Model):
         self.eki_product_sales_x_days = 0
         for pos_order_line in pos_order_lines:
             self.eki_product_sales_x_days += pos_order_line.qty
+
+
+
+
+
