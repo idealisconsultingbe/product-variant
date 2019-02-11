@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <!-- Small Version of product sticker -->
+    <template id="report_small_productlocation_document">
+        <t t-set="doc" t-value="doc"/>
+          <div class="page" style="width:100%; margin: 0 auto;">
+              <table>
+                  <tr>
+                      <td style="font-size:150%">
+                          <span t-field="doc.name"/>
+                      </td>
+                  </tr>
+                  <tr style="margin-top:200px">
+                      <td>
+                          <span t-field="doc.eki_origin_country_id.name"/>
+                      </td>
+                      <td style="font-size:150%">
+                          <strong>
+                              <span t-field="doc.price" t-options='{"widget": "monetary"}'/>
+                          </strong>
+                      </td>
+                  </tr>
+              </table>
+          </div>
+    </template>
+
+    <template id="report_small_productlocation">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="eki_product.report_small_productlocation_document"/>
+            </t>
+        </t>
+    </template>
+
+    <report
+        id="eki_product.location_small_report"
+        string="Product Stickers"
+        model="product.product"
+        report_type="qweb-pdf"
+        file="eki_product.report_small_productlocation"
+        name="eki_product.report_small_productlocation"
+    />
+    <!-- Big version of product sticker -->
+    <template id="report_big_productlocation_document">
+        <t t-set="doc" t-value="doc"/>
+          <div class="page" style="width:100%; margin: 0 auto;">
+              <table>
+                  <tr>
+                      <td>
+                          <t-esc style="color:#81d381">LOT:</t-esc>
+                      </td>
+                      <td>
+                          <br/>
+                      </td>
+                      <td>
+                          <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" style="max-height: 90px;" alt="Logo"/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <t-esc style="color:#81d381">DLC:</t-esc>
+                          <span t-field="doc.eki_ldap"/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                        <br/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                        <br/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="font-size:150%">
+                          <span t-field="doc.name"/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                        <br/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                        <br/>
+                      </td>
+                  </tr>
+
+                  <tr>
+                      <td>
+                          <t-esc style="color:#81d381">Origin:</t-esc>
+                      </td>
+                      <td style="font-size:170%">
+                          <strong>
+                              <span t-field="doc.price" t-options='{"widget": "monetary"}'/>
+                          </strong>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <t t-if="doc.eki_origin_country_id">
+                            <span t-field="doc.eki_origin_country_id.name"/>
+                          </t>
+                          <t t-if="not doc.eki_origin_country_id">
+                              <t-esc>N/A</t-esc>
+                          </t>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                        <br/>
+                      </td>
+                  </tr>
+
+                  <tr>
+                      <td>
+                          <t-esc style="color:#81d381">Remarques:</t-esc>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <span t-field="doc.description_sale"/>
+                      </td>
+                  </tr>
+
+                  <tr>
+                      <td>
+                          <br/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <br/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <t-esc style="color:#81d381">Ingrédients:</t-esc>
+                      </td>
+                  </tr>
+                   <tr>
+                      <td>
+                          <span t-field="doc.eki_ingredient"/>
+                      </td>
+                  </tr>
+
+              </table>
+          </div>
+    </template>
+
+    <template id="report_big_productlocation">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="eki_product.report_big_productlocation_document"/>
+            </t>
+        </t>
+    </template>
+
+    <report
+            id="eki_product.location_big_report"
+            string="Product Stickers (Big Version)"
+            model="product.product"
+            report_type="qweb-pdf"
+            file="eki_product.report_big_productlocation"
+            name="eki_product.report_big_productlocation"
+    />
+
+    <record id="eki_product_location_small_stickers" model="report.paperformat">
+        <field name="name">Product Stickers (Small Version)</field>
+        <field name="default" eval="True"/>
+        <field name="format">custom</field>
+        <field name="page_height">73</field>
+        <field name="page_width">50</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">5</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+   </record>
+
+
+</odoo>

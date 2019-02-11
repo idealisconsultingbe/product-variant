@@ -20,30 +20,10 @@
 #
 ##############################################################################
 
-{
-    'name': 'Ekivrac all',
-    'category': 'Ekivrac',
-    'version': '1.0',
-    'website': 'https://www.idealisconsulting.com/',
-    'description': """
-Ekivrac Module
+from odoo import api, fields, models
 
-All module installation
-        """,
-    'depends': [
-        'base',
-        'eki_base',
-        'eki_purchase',
-        'eki_stock',
-        'eki_product',
-    ],
-    'data': [
 
-    ],
-    'qweb': [
-    ],
-    'demo': [
-    ],
-    'installable': True,
-    'application': True,
-}
+class EkiProductTemplate(models.Model):
+    _inherit = "product.template"
+
+    eki_origin_country_id = fields.Many2one('res.country', string='Origin')
