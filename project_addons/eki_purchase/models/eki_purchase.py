@@ -40,7 +40,7 @@ class EkiPurchaseOrder(models.Model):
                 product = supplier_info.product_id if supplier_info.product_id else supplier_info.product_tmpl_id.product_variant_id
                 if product and product.id not in product_in_values:
                     product_in_values.append(product.id)
-                    values.append({
+                    values.append((0, 0, {
                             'name': product.name,
                             'product_id': product.id,
                             'product_qty': 0,
