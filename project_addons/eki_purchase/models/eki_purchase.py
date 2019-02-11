@@ -76,6 +76,12 @@ class EkiPurchaseOrder(models.Model):
 
     @api.multi
     def button_confirm(self):
+        for order in self:
+            if order.partner_id.eki_franco > 0.0 and order.amount_total < order.partner_id.eki_franco:
+                raise UserError(_("The total amount is less than the minimum amount ({} < {}) for the partner {}").format(
+                    order.amount_total, order.partner_id.eki_franco, order.partner_id.name))
+        return super(EkiPurchaseOrder, self).button_confirm()
+
     def update_vidange(self):
         for purchase in self:
             values = []
@@ -85,30 +91,26 @@ class EkiPurchaseOrder(models.Model):
             for line in lines_with_return:
                 # We add one line per eki_return thus we add to sum on all product with the same eki_return
                 if line.product_id.eki_return.id not in product_to_add:
-                    line_with_same_return = lines_with_return.filtered(lambda x: x.product_id.eki_return == line.product_id.eki_return)
+                    line_with_same_return = lines_with_return.filtered(
+                        lambda x: x.product_id.eki_return == line.product_id.eki_return)
                     qty = sum(x['product_qty'] for x in line_with_same_return)
                     if purchase_return:
-                        purchase_return = purchase.order_line.filtered(lambda x: x.product_id.id == line.product_id.eki_return.id)
+                        purchase_return = purchase.order_line.filtered(
+                            lambda x: x.product_id.id == line.product_id.eki_return.id)
                         purchase_return[0].product_qty = qty
                     else:
                         values.append((0, 0, {
-                                    'name': line.product_id.eki_return.name,
-                                    'product_id': line.product_id.eki_return.id,
-                                    'product_qty': qty,
-                                    'product_uom': line.product_id.eki_return.uom_po_id.id,
-                                    'price_unit': line.product_id.eki_return.price,
-                                    'date_planned': fields.Datetime.now(),
-                                }))
+                            'name': line.product_id.eki_return.name,
+                            'product_id': line.product_id.eki_return.id,
+                            'product_qty': qty,
+                            'product_uom': line.product_id.eki_return.uom_po_id.id,
+                            'price_unit': line.product_id.eki_return.price,
+                            'date_planned': fields.Datetime.now(),
+                        }))
                         product_to_add.append(line.product_id.eki_return.id)
 
-        for order in self:
-            if order.partner_id.eki_franco > 0.0 and order.amount_total < order.partner_id.eki_franco:
-                raise UserError(_("The total amount is less than the minimum amount ({} < {}) for the partner {}").format(
-                    order.amount_total, order.partner_id.eki_franco, order.partner_id.name))
-        return super(EkiPurchaseOrder, self).button_confirm()
-
-            if values:
-                purchase.update({'order_line': values})
+        if values:
+            purchase.update({'order_line': values})
 
 
 class EkiPurchaseOrderLine(models.Model):
