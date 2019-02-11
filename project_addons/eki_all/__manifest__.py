@@ -34,6 +34,7 @@ All module installation
         'base',
         'eki_base',
         'eki_purchase',
+        'eki_account',
     ],
     'data': [
 
