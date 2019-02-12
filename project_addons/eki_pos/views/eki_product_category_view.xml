@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="eki_product_category_pos_form_view" model="ir.ui.view">
+            <field name="name">eki.product.category.pos.form.view</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+                <field name="parent_id" position="after">
+                    <field name="pos_categ_id" readonly="1"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>
