@@ -46,15 +46,15 @@ class EkiAccountInvoice(models.Model):
                         lastsupplierinfo = None
                         for supplierinfo in supplierinfos:
                             # In the logic, we always state that if date_to is not filled, then it's the last one
-                            if not supplierinfo or not supplierinfo.date_to:
+                            if not supplierinfo or not supplierinfo.date_end:
                                 lastsupplierinfo = supplierinfo
 
-                            elif not lastsupplierinfo.date_to:
+                            elif not lastsupplierinfo.date_end:
                                     break
                             else:
                                 # If we need to compare two suppliers info based on date,
                                 # the one with the bigger date_to is chose
-                                if supplierinfo.date_to > lastsupplierinfo.date_to:
+                                if supplierinfo.date_end > lastsupplierinfo.date_end:
                                     lastsupplierinfo = supplierinfo
 
                         if lastsupplierinfo.price != invoice_line.price_unit:
