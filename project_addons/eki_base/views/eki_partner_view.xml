@@ -17,5 +17,18 @@
             </field>
         </record>
 
+        <record id="eki_base_view_vendor_shop_manager_form" model="ir.ui.view">
+            <field name="name">eki.base.view.vendor.shop.manager.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="groups_id" eval="[(4, ref('eki_base.eki_base_shop_manager'))]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                    <attribute name="groups">base.group_multi_company,eki_base.eki_base_shop_manager</attribute>
+                </xpath>
+            </field>
+        </record>
+
     </data>
 </odoo>
