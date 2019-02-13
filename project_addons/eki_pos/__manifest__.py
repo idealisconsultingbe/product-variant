@@ -36,6 +36,7 @@ PoS Module
     ],
     'data': [
         'views/eki_product_category_view.xml',
+        'views/eki_pos_assets.xml',
     ],
     'qweb': [
     ],

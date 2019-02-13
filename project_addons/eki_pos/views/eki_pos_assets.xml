@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <template id="eki_pos_assets" name="eki.pos.assets" inherit_id="point_of_sale.assets">
+            <xpath expr='.' position="inside">
+                <script type="text/javascript" src="/eki_pos/static/src/js/eki_pos_models.js"/>
+            </xpath>
+        </template>
+    </data>
+</odoo>
