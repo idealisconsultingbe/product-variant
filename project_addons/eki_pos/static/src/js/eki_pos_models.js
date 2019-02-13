@@ -87,6 +87,14 @@ odoo.define('eki_pos.models', function(require) {
                 }
             });
         },
+
+        /**
+         * Override default get_display_price to always display VAT included price
+         * @returns {*}
+         */
+        get_display_price: function(){
+            return this.get_price_with_tax();
+        },
     });
 
     /**
