@@ -39,6 +39,7 @@ Main module
         'point_of_sale',
     ],
     'data': [
+        'security/eki_base_security.xml',
         'views/eki_partner_view.xml',
         'views/eki_product_view.xml',
         'views/eki_sale_view.xml',
