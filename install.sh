@@ -59,9 +59,9 @@ function install_odoo {
 
     bin/buildout install
 
-    if [ ! -f parts/odoo/requirements.txt ]; then 
+    if [ -f parts/odoo/requirements.txt ]; then 
         echo "Installing PIP requirements"
-        bin/pip install -r parts/odoo/requirements.txt
+        py36/bin/pip install -r parts/odoo/requirements.txt
     fi
 
     echo
