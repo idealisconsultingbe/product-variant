@@ -29,7 +29,7 @@ apply-requirements-file = False
 
 addons = local ./project_addons/
          git git@github.com:odoo/enterprise.git parts/odoo/addons-enterprise 12.0
-         git git@github.com:idealisconsultingbe/product-variant.git parts/idealis/product-variant 12.0
+         git git@github.com:idealisconsultingbe/product-variant.git parts/idealis 12.0 group=product_variant
          git git@git.myidealis.be:odoo_apps/addons.git parts/idealis/addons-ic-apps 12.0
          git https://github.com/OCA/server-ux.git parts/community/addons-oca-server-ux 12.0
 

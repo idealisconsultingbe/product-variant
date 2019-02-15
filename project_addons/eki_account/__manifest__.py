@@ -32,6 +32,7 @@ Account Module
         """,
     'depends': [
         'account',
+        'purchase',
 
     ],
     'data': [
