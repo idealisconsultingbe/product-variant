@@ -39,6 +39,7 @@ PoS Module
         'views/eki_pos_assets.xml',
     ],
     'qweb': [
+        'static/src/xml/eki_pos.xml'
     ],
     'demo': [
     ],
