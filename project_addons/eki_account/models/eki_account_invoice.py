@@ -32,7 +32,9 @@ class EkiAccountInvoice(models.Model):
         for invoice in self:
             for invoice_line in invoice.invoice_line_ids:
                 supplierinfos = product_supplierinfo_obj.search([('name', '=', invoice.partner_id.id),
-                                                                ('product_id', '=', invoice_line.product_id.id)])
+                                                                ('product_id', '=', invoice_line.product_id.id),
+                                                                 ('min_qty', '<=', invoice_line.quantity),
+                                                                 ])
                 if supplierinfos:
                     # If we found only one supplierinfo, we apply the logic on it
                     if len(supplierinfos) == 1:
@@ -44,21 +46,33 @@ class EkiAccountInvoice(models.Model):
                     # If we fond more than 1 supplierinfo, we need to get the last one
                     elif len(supplierinfos) > 1:
                         lastsupplierinfo = None
+                        delta_min_qty = 0
                         for supplierinfo in supplierinfos:
                             # In the logic, we always state that if date_to is not filled, then it's the last one
-                            if not supplierinfo or not supplierinfo.date_end:
+                            if not lastsupplierinfo:
                                 lastsupplierinfo = supplierinfo
+                                delta_min_qty = invoice_line.quantity - supplierinfo.min_qty
 
-                            elif not lastsupplierinfo.date_end:
-                                    break
                             else:
-                                # If we need to compare two suppliers info based on date,
-                                # the one with the bigger date_to is chose
-                                if supplierinfo.date_end > lastsupplierinfo.date_end:
+                                if not supplierinfo.date_end and (invoice_line.quantity - supplierinfo.min_qty) < delta_min_qty:
                                     lastsupplierinfo = supplierinfo
+                                    delta_min_qty = invoice_line.quantity - supplierinfo.min_qty
+                                # If we need to compare two suppliers info based on date,
+                                # the one with the bigger date_to is chose if min_qty is ok
+                                elif supplierinfo.date_end:
+                                    if lastsupplierinfo.date_end:
+                                        if supplierinfo.date_end > lastsupplierinfo.date_end \
+                                            and supplierinfo.min_qty > lastsupplierinfo.min_qty\
+                                            and (invoice_line.quantity - supplierinfo.min_qty) < delta_min_qty:
+                                            lastsupplierinfo = supplierinfo
+                                            delta_min_qty = invoice_line.quantity - supplierinfo.min_qty
+                                        elif supplierinfo.min_qty > lastsupplierinfo.min_qty\
+                                            and (invoice_line.quantity - supplierinfo.min_qty) < delta_min_qty:
+                                            lastsupplierinfo = supplierinfo
+                                            delta_min_qty = invoice_line.quantity - supplierinfo.min_qty
 
                         if lastsupplierinfo.price != invoice_line.price_unit:
-                            supplierinfos.write({
+                            lastsupplierinfo.write({
                                 'eki_last_supplier_price': invoice_line.price_unit,
                                 'eki_price_has_changed': True})
 

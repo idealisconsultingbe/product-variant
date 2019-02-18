@@ -94,9 +94,9 @@ class EkiPurchaseOrder(models.Model):
                     line_with_same_return = lines_with_return.filtered(
                         lambda x: x.product_id.eki_return == line.product_id.eki_return)
                     qty = sum(x['product_qty'] for x in line_with_same_return)
+                    purchase_return = purchase.order_line.filtered(
+                        lambda x: x.product_id.id == line.product_id.eki_return.id)
                     if purchase_return:
-                        purchase_return = purchase.order_line.filtered(
-                            lambda x: x.product_id.id == line.product_id.eki_return.id)
                         purchase_return[0].product_qty = qty
                     else:
                         values.append((0, 0, {
