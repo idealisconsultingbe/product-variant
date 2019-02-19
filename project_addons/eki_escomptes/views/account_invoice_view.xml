@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+		<record id="eki_escomptes_payment_term_form_view" model="ir.ui.view">
+			<field name="name">eki.escompte.payment.term.view_order_form</field>
+			<field name="model">account.payment.term</field>
+			<field name="inherit_id" ref="account.view_payment_term_form" />
+			<field name="arch" type="xml">
+			    <xpath expr="/form/group" position="replace">
+			        <group col="4">
+                        <field name="name"/>
+                        <field name="active"/>
+                        <field name="company_id" invisible="1"/>
+                    </group>
+                    <group col="2">
+                        <field name="act_htva"/>
+                        <field name="act_tva"/>
+                    </group>
+                </xpath>
+            </field>
+		</record>
+
+		<record id="eki_escomptes_payment_payment_term_tree_view" model="ir.ui.view">
+			<field name="name">eki.escompte.account.view_payment_term_tree</field>
+			<field name="model">account.payment.term</field>
+			<field name="arch" type="xml">
+				<tree string="Payment terms">
+				    <field name='name' />
+				    <field name="act_htva" />
+				    <field name="act_tva" />
+				</tree>
+			</field>
+		</record>
+    </data>
+</odoo>
