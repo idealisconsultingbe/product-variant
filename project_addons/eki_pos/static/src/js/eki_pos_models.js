@@ -2,6 +2,9 @@ odoo.define('eki_pos.models', function(require) {
     "use strict";
 
     var models = require('point_of_sale.models');
+    var utils = require('web.utils');
+    var round_di = utils.round_decimals;
+    var round_pr = utils.round_precision;
 
     /**
      * Extension of PosModel class
@@ -21,6 +24,105 @@ odoo.define('eki_pos.models', function(require) {
             });
             product_model.fields.push('eki_return', 'eki_is_return');
             _super_pos_model.initialize.apply(this, arguments);
+        },
+    });
+
+    /**
+     * Extension of POS Product class
+     */
+    models.Product = models.Product.extend({
+
+        /**
+         * Copy of Orderline _compute_all function
+         */
+        _compute_all: function(tax, base_amount, quantity) {
+            if (tax.amount_type === 'fixed') {
+                var sign_base_amount = base_amount >= 0 ? 1 : -1;
+                return (Math.abs(tax.amount) * sign_base_amount) * quantity;
+            }
+            if ((tax.amount_type === 'percent' && !tax.price_include) || (tax.amount_type === 'division' && tax.price_include)){
+                return base_amount * tax.amount / 100;
+            }
+            if (tax.amount_type === 'percent' && tax.price_include){
+                return base_amount - (base_amount / (1 + tax.amount / 100));
+            }
+            if (tax.amount_type === 'division' && !tax.price_include) {
+                return base_amount / (1 - tax.amount / 100) - base_amount;
+            }
+            return false;
+        },
+
+        /**
+         * Copy of Orderline compute_all function to allow Product price with tax computation
+         */
+        compute_price: function(taxes, price_unit, currency_rounding) {
+            var self = this;
+            var list_taxes = [];
+            var currency_rounding_bak = currency_rounding;
+            if (self.pos.company.tax_calculation_rounding_method == "round_globally"){
+               currency_rounding = currency_rounding * 0.00001;
+            }
+            var total_excluded = round_pr(price_unit, currency_rounding);
+            var total_included = total_excluded;
+            var base = total_excluded;
+            _(taxes).each(function(tax) {
+                if (!tax){
+                    return;
+                }
+                if (tax.amount_type === 'group'){
+                    var ret = self.compute_price(tax.children_tax_ids, price_unit, 1, currency_rounding);
+                    total_excluded = ret.total_excluded;
+                    base = ret.total_excluded;
+                    total_included = ret.total_included;
+                    list_taxes = list_taxes.concat(ret.taxes);
+                }
+                else {
+                    var tax_amount = self._compute_all(tax, base, 1);
+                    tax_amount = round_pr(tax_amount, currency_rounding);
+
+                    if (tax_amount){
+                        if (tax.price_include) {
+                            total_excluded -= tax_amount;
+                            base -= tax_amount;
+                        }
+                        else {
+                            total_included += tax_amount;
+                        }
+                        if (tax.include_base_amount) {
+                            base += tax_amount;
+                        }
+                        var data = {
+                            id: tax.id,
+                            amount: tax_amount,
+                            name: tax.name,
+                        };
+                        list_taxes.push(data);
+                    }
+                }
+            });
+            return round_pr(total_included, currency_rounding_bak);
+        },
+
+        /**
+         * Function used to display price with tax on Pos ProductList widget
+         * Called in Product extended QWeb template
+         */
+        get_display_price: function (pricelist, pos) {
+            var self = this;
+            self.pos = pos;
+            var price_unit = self.get_price(pricelist, 1);
+
+            var taxes_ids = self.taxes_id;
+            var taxes =  self.pos.taxes;
+            var product_taxes = [];
+
+            _(taxes_ids).each(function(el){
+                product_taxes.push(_.detect(taxes, function(t){
+                    return t.id === el;
+                }));
+            });
+
+            return self.compute_price(product_taxes, price_unit, self.pos.currency.rounding);
         },
     });
 
@@ -86,14 +188,6 @@ odoo.define('eki_pos.models', function(require) {
                     return_product_done.push(eki_return_id);
                 }
             });
-        },
-
-        /**
-         * Override default get_display_price to always display VAT included price
-         * @returns {*}
-         */
-        get_display_price: function(){
-            return this.get_price_with_tax();
         },
     });
 
