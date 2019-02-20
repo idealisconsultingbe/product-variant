@@ -20,6 +20,24 @@
 #
 ##############################################################################
 
-from . import eki_product
-from . import eki_product_lot
-from . import eki_product_product
+from odoo import models, _
+
+
+class EkiProductProduct(models.Model):
+    _inherit = "product.product"
+
+    def history_action(self):
+        form_view_id = self.env.ref('eki_product.eki_product_lot_form_view').id
+        tree_view_id = self.env.ref('eki_product.eki_product_lot_tree_view').id
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Product History'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'eki.product.lot',
+            'domain': str([('product_id', '=', self.id)]),
+            'context': str({'default_product_id': self.id}),
+            'target': 'current',
+            'view_id': tree_view_id,
+            'views': [[tree_view_id, "tree"], [form_view_id, "form"]]
+        }

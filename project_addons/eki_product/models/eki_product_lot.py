@@ -20,6 +20,12 @@
 #
 ##############################################################################
 
-from . import eki_product
-from . import eki_product_lot
-from . import eki_product_product
+from odoo import models, fields
+
+
+class EkiProductLot(models.Model):
+    _name = 'eki.product.lot'
+
+    product_id = fields.Many2one('product.product', string='Product', required=True)
+    date = fields.Datetime(string='Date', required=True, default=fields.Datetime.now())
+    lot_picture = fields.Binary(string='Lot Picture', required=True)
