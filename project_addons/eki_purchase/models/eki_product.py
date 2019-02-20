@@ -28,3 +28,4 @@ class EkiSupplierInfo(models.Model):
     _inherit = "product.supplierinfo"
 
     eki_discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), default=0.0)
+

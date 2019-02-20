@@ -20,36 +20,29 @@
 #
 ##############################################################################
 
-{
-    'name': 'Ekivrac Base',
-    'category': 'Ekivrac',
-    'version': '1.0',
-    'website': 'https://www.idealisconsulting.com/',
-    'description': """
-Ekivrac Module
+from odoo import api, fields, models
+from odoo.addons import decimal_precision as dp
 
-Main module
-        """,
-    'depends': [
-        'stock',
-        'product',
-        'sale',
-        'sale_management',
-        'sale_purchase',
-        'point_of_sale',
-    ],
-    'data': [
-        'security/eki_base_security.xml',
-        'views/eki_partner_view.xml',
-        'views/eki_product_view.xml',
-        'views/eki_sale_view.xml',
 
-        'security/ir.model.access.csv',
-    ],
-    'qweb': [
-    ],
-    'demo': [
-    ],
-    'installable': True,
-    'application': True,
-}
+class EkiSupplierInfo(models.Model):
+    _inherit = "product.supplierinfo"
+
+    @api.multi
+    def _validate_new_price(self):
+        for supplierinfo in self.filtered(lambda x: x.eki_price_has_changed):
+            supplierinfo.write({
+                'price': supplierinfo.eki_last_supplier_price,
+                'eki_last_supplier_price': 0.0,
+                'eki_price_has_changed': False})
+
+    @api.multi
+    def _refuse_new_price(self):
+        for supplierinfo in self.filtered(lambda x: x.eki_price_has_changed):
+            supplierinfo.write({
+                'eki_last_supplier_price': 0.0,
+                'eki_price_has_changed': False})
+
+    eki_last_supplier_price = fields.Float(string='Last Supplier Price')
+    eki_price_has_changed = fields.Boolean(string='Price Change', default=False)
+
+

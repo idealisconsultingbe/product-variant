@@ -21,32 +21,25 @@
 ##############################################################################
 
 {
-    'name': 'Ekivrac Base',
+    'name': 'Ekivrac POS',
     'category': 'Ekivrac',
     'version': '1.0',
     'website': 'https://www.idealisconsulting.com/',
     'description': """
 Ekivrac Module
 
-Main module
+PoS Module
         """,
     'depends': [
-        'stock',
-        'product',
-        'sale',
-        'sale_management',
-        'sale_purchase',
         'point_of_sale',
+        'product',
     ],
     'data': [
-        'security/eki_base_security.xml',
-        'views/eki_partner_view.xml',
-        'views/eki_product_view.xml',
-        'views/eki_sale_view.xml',
-
-        'security/ir.model.access.csv',
+        'views/eki_product_category_view.xml',
+        'views/eki_pos_assets.xml',
     ],
     'qweb': [
+        'static/src/xml/eki_pos.xml'
     ],
     'demo': [
     ],

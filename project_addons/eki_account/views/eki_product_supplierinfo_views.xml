@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="eki_product_supplierinfo_tree_view" model="ir.ui.view">
+            <field name="name">eki.product.supplierinfo.tree.view</field>
+            <field name="model">product.supplierinfo</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="product_id"/>
+                    <field name="price"/>
+                    <field name="eki_last_supplier_price"/>
+                    <field name="eki_price_has_changed"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="eki_product_supplierinfo_form_view" model="ir.ui.view">
+            <field name="name" >eki.product.supplierinfo.form.view</field>
+            <field name="model">product.supplierinfo</field>
+            <field name="inherit_id" ref="product.product_supplierinfo_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_code']" position="after">
+                    <field name="eki_price_has_changed"/>
+                    <field name="eki_last_supplier_price"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="eki_product_supplierinfo_search" model="ir.ui.view">
+            <field name="name">eki_product_supplierinfo_search</field>
+            <field name="model">product.supplierinfo</field>
+            <field name="arch" type="xml">
+                <search string="Search Supplier Price">
+                    <filter name="eki_price_has_changed" string="Price Changed" domain="[('eki_price_has_changed','=',True)]"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="eki_product_supplierinfo_type_action" model="ir.actions.act_window">
+            <field name="name">Vendor Pricelists To Check</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.supplierinfo</field>
+            <field name="view_type">form</field>
+            <field name="search_view_id" ref="eki_account.eki_product_supplierinfo_search"/>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="view_ids"
+                   eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'tree', 'view_id' : ref('eki_account.eki_product_supplierinfo_tree_view')}),
+                      (0, 0, {'view_mode': 'form', 'view_id' : False}),
+                      (0, 0, {'view_mode': 'kanban', 'view_id': False})]"/>
+            <field name="context">{'search_default_eki_price_has_changed': 1}</field>
+        </record>
+
+        <menuitem name="Vendor Pricelists To Check"
+                  id="eki_product_supplierinfo_menuitem"
+                  parent="purchase.menu_purchase_control"
+                  sequence="2"
+                  action="eki_product_supplierinfo_type_action"/>
+
+        <record id="eki_product_supplierinfo_tree_view_inherit" model="ir.ui.view">
+            <field name="name">eki.product.supplierinfo.tree.view.inherit</field>
+            <field name="model">product.supplierinfo</field>
+            <field name="inherit_id" ref="product.product_supplierinfo_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="price" position="after">
+                    <field name="eki_last_supplier_price"/>
+                    <field name="eki_price_has_changed"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Action to Validate Supplier Price -->
+        <record model="ir.actions.server" id="eki_action_validate_new_price">
+            <field name="name">Validate New Supplier Price</field>
+            <field name="model_id" ref="product.model_product_supplierinfo"/>
+            <field name="binding_model_id" ref="product.model_product_supplierinfo" />
+            <field name="state">code</field>
+            <field name="code">
+    records._validate_new_price()
+            </field>
+        </record>
+
+        <!-- Action to Refuse Supplier Price -->
+        <record model="ir.actions.server" id="eki_action_refuse_new_price">
+            <field name="name">Refuse New Supplier Price</field>
+            <field name="model_id" ref="product.model_product_supplierinfo"/>
+            <field name="binding_model_id" ref="product.model_product_supplierinfo" />
+            <field name="state">code</field>
+            <field name="code">
+    records._refuse_new_price()
+            </field>
+        </record>
+    </data>
+</odoo>
