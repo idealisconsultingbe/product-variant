@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <template id="eki_barcode_assets_backend" name="eki.barcode.assets" inherit_id="stock_barcode.assets_backend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/eki_barcode/static/src/js/eki_product_lot_action.js"/>
+                <script type="text/javascript" src="/eki_barcode/static/src/js/eki_stock_barcode.js"/>
+            </xpath>
+        </template>
+    </data>
+</odoo>

@@ -21,29 +21,26 @@
 ##############################################################################
 
 {
-    'name': 'Ekivrac all',
+    'name': 'Ekivrac Barcode',
     'category': 'Ekivrac',
     'version': '1.0',
     'website': 'https://www.idealisconsulting.com/',
     'description': """
 Ekivrac Module
 
-All module installation
+Barcode Module Customization
         """,
     'depends': [
-        'base',
-        'eki_base',
-        'eki_purchase',
-        'eki_stock',
-        'eki_account',
-        'eki_barcode',
+        'stock_barcode',
         'eki_product',
-        'eki_pos',
     ],
     'data': [
-
+        'views/eki_barcode_assets.xml',
+        'views/eki_product_lot_view.xml',
+        'data/eki_data.xml',
     ],
     'qweb': [
+        'static/src/xml/eki_barcode_templates.xml',
     ],
     'demo': [
     ],

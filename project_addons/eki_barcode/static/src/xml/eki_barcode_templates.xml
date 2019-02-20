@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="eki_barcode_template_extensions">
+    <t t-extend="main_menu">
+        <t t-jquery=".row" t-operation="append">
+            <div class="col" style="margin-top: 1.5em;">
+                <button class="button_product_lot btn btn-block btn-primary">Register Product Lot</button>
+            </div>
+        </t>
+    </t>
+</templates>

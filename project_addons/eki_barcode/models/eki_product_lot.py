@@ -20,33 +20,12 @@
 #
 ##############################################################################
 
-{
-    'name': 'Ekivrac all',
-    'category': 'Ekivrac',
-    'version': '1.0',
-    'website': 'https://www.idealisconsulting.com/',
-    'description': """
-Ekivrac Module
+from odoo import models, api
 
-All module installation
-        """,
-    'depends': [
-        'base',
-        'eki_base',
-        'eki_purchase',
-        'eki_stock',
-        'eki_account',
-        'eki_barcode',
-        'eki_product',
-        'eki_pos',
-    ],
-    'data': [
 
-    ],
-    'qweb': [
-    ],
-    'demo': [
-    ],
-    'installable': True,
-    'application': True,
-}
+class EkiProductLot(models.Model):
+    _inherit = 'eki.product.lot'
+
+    @api.model
+    def open_product_lot_action(self):
+        return self.env.ref('eki_barcode.eki_barcode_product_lot_action').read()[0]
