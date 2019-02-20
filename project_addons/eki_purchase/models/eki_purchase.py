@@ -127,7 +127,7 @@ class EkiPurchaseOrder(models.Model):
         for purchase in self:
             values = []
             for line in purchase.order_line.filtered(lambda x:x.product_id.eki_is_return):
-                purchase.update({'order_line': [(2, line.id)]})
+                purchase.update({'order_line': [(2, line.id)]}) # We delete every emptying line before recomputing in _add_eki_return
             product_in_po = [{'product_id': line.product_id, 'product_qty': line.product_qty} for line in purchase.order_line]
             self._add_eki_return(product_in_po, values)
             if values:
