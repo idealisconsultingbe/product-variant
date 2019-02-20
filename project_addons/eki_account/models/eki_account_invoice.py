@@ -26,55 +26,68 @@ from odoo.exceptions import UserError, ValidationError
 class EkiAccountInvoice(models.Model):
     _inherit = "account.invoice"
 
+    def _adapt_supplierinfo(self, supplierinfos, invoice_line):
+        # If we found only one supplierinfo, we apply the logic on it
+        if len(supplierinfos) == 1:
+            # If the price is different, then we put the flag on and adapt the last price field
+            if supplierinfos.price != invoice_line.price_unit:
+                supplierinfos.write({
+                    'eki_last_supplier_price': invoice_line.price_unit,
+                    'eki_price_has_changed': True})
+        # If we fond more than 1 supplierinfo, we need to get the last one
+        elif len(supplierinfos) > 1:
+            lastsupplierinfo = None
+            delta_min_qty = 0
+            for supplierinfo in supplierinfos:
+                # In the logic, we always state that if date_to is not filled, then it's the last one
+                if not lastsupplierinfo:
+                    lastsupplierinfo = supplierinfo
+                    delta_min_qty = invoice_line.quantity - supplierinfo.min_qty
+
+                else:
+                    if not supplierinfo.date_end and (invoice_line.quantity - supplierinfo.min_qty) < delta_min_qty:
+                        lastsupplierinfo = supplierinfo
+                        delta_min_qty = invoice_line.quantity - supplierinfo.min_qty
+                    # If we need to compare two suppliers info based on date,
+                    # the one with the bigger date_to is chose if min_qty is ok
+                    elif supplierinfo.date_end:
+                        if lastsupplierinfo.date_end:
+                            if supplierinfo.date_end > lastsupplierinfo.date_end \
+                                    and supplierinfo.min_qty > lastsupplierinfo.min_qty \
+                                    and (invoice_line.quantity - supplierinfo.min_qty) < delta_min_qty:
+                                lastsupplierinfo = supplierinfo
+                                delta_min_qty = invoice_line.quantity - supplierinfo.min_qty
+                            elif supplierinfo.min_qty > lastsupplierinfo.min_qty \
+                                    and (invoice_line.quantity - supplierinfo.min_qty) < delta_min_qty:
+                                lastsupplierinfo = supplierinfo
+                                delta_min_qty = invoice_line.quantity - supplierinfo.min_qty
+
+            if lastsupplierinfo.price != invoice_line.price_unit:
+                lastsupplierinfo.write({
+                    'eki_last_supplier_price': invoice_line.price_unit,
+                    'eki_price_has_changed': True})
+
     def adapt_supplierinfo(self):
         product_supplierinfo_obj = self.env['product.supplierinfo']
         # For each invoice, we look for product_supplierinfo with same partner/product key
         for invoice in self:
             for invoice_line in invoice.invoice_line_ids:
+
                 supplierinfos = product_supplierinfo_obj.search([('name', '=', invoice.partner_id.id),
                                                                 ('product_id', '=', invoice_line.product_id.id),
                                                                  ('min_qty', '<=', invoice_line.quantity),
                                                                  ])
+
                 if supplierinfos:
-                    # If we found only one supplierinfo, we apply the logic on it
-                    if len(supplierinfos) == 1:
-                        # If the price is different, then we put the flag on and adapt the last price field
-                        if supplierinfos.price != invoice_line.price_unit:
-                            supplierinfos.write({
-                                'eki_last_supplier_price': invoice_line.price_unit,
-                                'eki_price_has_changed': True})
-                    # If we fond more than 1 supplierinfo, we need to get the last one
-                    elif len(supplierinfos) > 1:
-                        lastsupplierinfo = None
-                        delta_min_qty = 0
-                        for supplierinfo in supplierinfos:
-                            # In the logic, we always state that if date_to is not filled, then it's the last one
-                            if not lastsupplierinfo:
-                                lastsupplierinfo = supplierinfo
-                                delta_min_qty = invoice_line.quantity - supplierinfo.min_qty
+                    invoice._adapt_supplierinfo(supplierinfos, invoice_line)
+                else:
+                    supplierinfos = product_supplierinfo_obj.search([('name', '=', invoice.partner_id.id),
+                                                                     ('product_tmpl_id', '=', invoice_line.product_id.product_tmpl_id.id),
+                                                                     ('min_qty', '<=', invoice_line.quantity),
+                                                                     ])
+                    if supplierinfos:
+                        invoice._adapt_supplierinfo(supplierinfos, invoice_line)
 
-                            else:
-                                if not supplierinfo.date_end and (invoice_line.quantity - supplierinfo.min_qty) < delta_min_qty:
-                                    lastsupplierinfo = supplierinfo
-                                    delta_min_qty = invoice_line.quantity - supplierinfo.min_qty
-                                # If we need to compare two suppliers info based on date,
-                                # the one with the bigger date_to is chose if min_qty is ok
-                                elif supplierinfo.date_end:
-                                    if lastsupplierinfo.date_end:
-                                        if supplierinfo.date_end > lastsupplierinfo.date_end \
-                                            and supplierinfo.min_qty > lastsupplierinfo.min_qty\
-                                            and (invoice_line.quantity - supplierinfo.min_qty) < delta_min_qty:
-                                            lastsupplierinfo = supplierinfo
-                                            delta_min_qty = invoice_line.quantity - supplierinfo.min_qty
-                                        elif supplierinfo.min_qty > lastsupplierinfo.min_qty\
-                                            and (invoice_line.quantity - supplierinfo.min_qty) < delta_min_qty:
-                                            lastsupplierinfo = supplierinfo
-                                            delta_min_qty = invoice_line.quantity - supplierinfo.min_qty
-
-                        if lastsupplierinfo.price != invoice_line.price_unit:
-                            lastsupplierinfo.write({
-                                'eki_last_supplier_price': invoice_line.price_unit,
-                                'eki_price_has_changed': True})
 
     def action_invoice_open(self):
         for invoice in self.filtered(lambda x: x.type == 'in_invoice'):
