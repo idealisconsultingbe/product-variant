@@ -73,20 +73,24 @@ class EkiAccountInvoice(models.Model):
         for invoice in self:
             for invoice_line in invoice.invoice_line_ids:
 
-                supplierinfos = product_supplierinfo_obj.search([('name', '=', invoice.partner_id.id),
-                                                                ('product_id', '=', invoice_line.product_id.id),
-                                                                 ('min_qty', '<=', invoice_line.quantity),
-                                                                 ])
+                if invoice_line.product_id \
+                        and invoice_line.product_id.categ_id \
+                        and not invoice_line.product_id.categ_id.eki_is_price_change_continuously:
 
-                if supplierinfos:
-                    invoice._adapt_supplierinfo(supplierinfos, invoice_line)
-                else:
                     supplierinfos = product_supplierinfo_obj.search([('name', '=', invoice.partner_id.id),
-                                                                     ('product_tmpl_id', '=', invoice_line.product_id.product_tmpl_id.id),
+                                                                    ('product_id', '=', invoice_line.product_id.id),
                                                                      ('min_qty', '<=', invoice_line.quantity),
                                                                      ])
+
                     if supplierinfos:
                         invoice._adapt_supplierinfo(supplierinfos, invoice_line)
+                    else:
+                        supplierinfos = product_supplierinfo_obj.search([('name', '=', invoice.partner_id.id),
+                                                                         ('product_tmpl_id', '=', invoice_line.product_id.product_tmpl_id.id),
+                                                                         ('min_qty', '<=', invoice_line.quantity),
+                                                                         ])
+                        if supplierinfos:
+                            invoice._adapt_supplierinfo(supplierinfos, invoice_line)
 
 
     def action_invoice_open(self):
