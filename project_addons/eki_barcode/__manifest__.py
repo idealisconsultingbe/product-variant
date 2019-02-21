@@ -32,12 +32,13 @@ Barcode Module Customization
         """,
     'depends': [
         'stock_barcode',
-        'eki_product',
     ],
     'data': [
         'views/eki_barcode_assets.xml',
         'views/eki_product_lot_view.xml',
+        'views/eki_product_product_views.xml',
         'data/eki_data.xml',
+        'security/ir.model.access.csv',
     ],
     'qweb': [
         'static/src/xml/eki_barcode_templates.xml',

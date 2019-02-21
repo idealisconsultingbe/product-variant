@@ -20,11 +20,15 @@
 #
 ##############################################################################
 
-from odoo import models, api
+from odoo import models, fields, api
 
 
 class EkiProductLot(models.Model):
-    _inherit = 'eki.product.lot'
+    _name = 'eki.product.lot'
+
+    product_id = fields.Many2one('product.product', string='Product', required=True)
+    date = fields.Datetime(string='Date', required=True, default=fields.Datetime.now())
+    lot_picture = fields.Binary(string='Lot Picture', required=True)
 
     @api.model
     def open_product_lot_action(self):

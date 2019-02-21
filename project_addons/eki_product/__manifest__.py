@@ -36,10 +36,7 @@ Product module
     ],
     'data': [
         'views/eki_product_views.xml',
-        'views/eki_product_product_views.xml',
-        'views/eki_product_lot_views.xml',
         'reports/eki_product_stickers.xml',
-        'security/ir.model.access.csv',
     ],
     'qweb': [
     ],

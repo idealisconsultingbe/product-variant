@@ -20,12 +20,24 @@
 #
 ##############################################################################
 
-from odoo import models, fields
+from odoo import models, _
 
 
-class EkiProductLot(models.Model):
-    _name = 'eki.product.lot'
+class EkiProductProduct(models.Model):
+    _inherit = "product.product"
 
-    product_id = fields.Many2one('product.product', string='Product', required=True)
-    date = fields.Datetime(string='Date', required=True, default=fields.Datetime.now())
-    lot_picture = fields.Binary(string='Lot Picture', required=True)
+    def history_action(self):
+        form_view_id = self.env.ref('eki_barcode.eki_product_lot_form_view').id
+        tree_view_id = self.env.ref('eki_barcode.eki_product_lot_tree_view').id
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Product History'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'eki.product.lot',
+            'domain': str([('product_id', '=', self.id)]),
+            'context': str({'default_product_id': self.id}),
+            'target': 'current',
+            'view_id': tree_view_id,
+            'views': [[tree_view_id, "tree"], [form_view_id, "form"]]
+        }
