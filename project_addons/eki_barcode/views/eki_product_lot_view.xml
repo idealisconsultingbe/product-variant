@@ -37,6 +37,7 @@
                     <group>
                         <field name="product_id"/>
                         <field name="lot_picture" widget="image"/>
+                        <field name="date" invisible="1"/>
                     </group>
                 </form>
             </field>
