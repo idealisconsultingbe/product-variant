@@ -20,4 +20,31 @@
 #
 ##############################################################################
 
-from . import eki_product
+{
+    'name': 'Ekivrac Barcode',
+    'category': 'Ekivrac',
+    'version': '1.0',
+    'website': 'https://www.idealisconsulting.com/',
+    'description': """
+Ekivrac Module
+
+Barcode Module Customization
+        """,
+    'depends': [
+        'stock_barcode',
+    ],
+    'data': [
+        'views/eki_barcode_assets.xml',
+        'views/eki_product_lot_view.xml',
+        'views/eki_product_product_views.xml',
+        'data/eki_data.xml',
+        'security/ir.model.access.csv',
+    ],
+    'qweb': [
+        'static/src/xml/eki_barcode_templates.xml',
+    ],
+    'demo': [
+    ],
+    'installable': True,
+    'application': True,
+}

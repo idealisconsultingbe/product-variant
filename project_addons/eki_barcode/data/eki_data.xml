@@ -1,0 +1,6 @@
+<odoo>
+    <record id="eki_barcode_product_lot_action" model="ir.actions.client">
+        <field name="name">Product Lot Client Action</field>
+        <field name="tag">product_lot_client_action</field>
+    </record>
+</odoo>

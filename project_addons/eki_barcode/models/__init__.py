@@ -20,4 +20,5 @@
 #
 ##############################################################################
 
-from . import eki_product
+from . import eki_product_lot
+from . import eki_product_product

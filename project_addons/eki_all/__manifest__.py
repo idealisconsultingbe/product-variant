@@ -36,6 +36,7 @@ All module installation
         'eki_purchase',
         'eki_stock',
         'eki_account',
+        'eki_barcode',
         'eki_product',
         'eki_pos',
     ],
