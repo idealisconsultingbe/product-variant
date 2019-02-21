@@ -66,6 +66,7 @@ class EkiPurchaseOrder(models.Model):
             'product_uom': product_uom.id,
             'taxes_id': [(6, 0, taxes_id.ids)],
             'date_planned': date_planned,
+            'eki_discount': supplier_info.eki_discount,
         }
 
     # Input:    product_not_to_add is a list of id
@@ -140,11 +141,15 @@ class EkiPurchaseOrderLine(models.Model):
     eki_is_product_under_min_stock = fields.Boolean(string='Product under min stock', compute='_compute_product_under_min_stock')
     eki_product_qty_available = fields.Float(string='Available quantity', related='product_id.qty_available', readonly=True)
     eki_product_sales_x_days = fields.Integer(string='Sales last days', compute='_compute_eki_product_sales_x_days', readonly=True)
-    eki_discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), compute='_compute_amount')
+    eki_discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'))
     eki_previous_qty = fields.Float(string='Previous product qty')
 
-    @api.depends('product_id.seller_ids', 'product_qty', 'price_unit', 'taxes_id')
-    def _compute_amount(self):
+    @api.onchange('product_id', 'price_unit')
+    def _compute_discount(self):
+        """
+        Compute eki_discount on product_id change
+        :return:
+        """
         for line in self:
             if not line.product_id.eki_is_return:
                 now = fields.Datetime.now()
@@ -152,19 +157,17 @@ class EkiPurchaseOrderLine(models.Model):
                 supplier_info = line.product_id.seller_ids.filtered(lambda x:x.name.id == supplier.id and x.min_qty <= line.product_qty and ((x.date_start == False or x.date_start <= now) and (x.date_end == False or x.date_end >= now)))
                 supplier_info = supplier_info.sorted(lambda x: x.min_qty, reverse=True)
                 line.eki_discount = supplier_info[0].eki_discount if supplier_info else 0.0
-            vals = line._prepare_compute_all_values()
-            vals['price_unit'] = vals['price_unit'] * (1 - (line.eki_discount or 0.0) / 100.0)
-            taxes = line.taxes_id.compute_all(
-                vals['price_unit'],
-                vals['currency_id'],
-                vals['product_qty'],
-                vals['product'],
-                vals['partner'])
-            line.update({
-                'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
-                'price_total': taxes['total_included'],
-                'price_subtotal': taxes['total_excluded'],
-            })
+
+    def _prepare_compute_all_values(self):
+        """
+        Override Hook method from purchase.order.line to
+        compute price_unit with eki_discount value
+        :return: prepared compute values
+        """
+        vals = super(EkiPurchaseOrderLine, self)._prepare_compute_all_values()
+        vals['price_unit'] = vals['price_unit'] * (1 - (self.eki_discount or 0.0) / 100.0)
+        return vals
+
 
     @api.one
     def _compute_product_under_min_stock(self):
