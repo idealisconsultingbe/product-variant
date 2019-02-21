@@ -35,6 +35,7 @@ Product module
         'eki_base',
     ],
     'data': [
+        'data/eki_ir_rule.xml',
         'views/eki_product_views.xml',
         'reports/eki_product_stickers.xml',
     ],
