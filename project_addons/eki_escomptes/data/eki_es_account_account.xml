@@ -7,6 +7,7 @@
             <field name="fields_id" search="[('model','=','account.invoice'),('name','=','property_account_discount_id')]"/>
             <field name="res_id" eval="False"/>
             <field name="value" eval="'account.account,'+str(ref('l10n_be.a757'))"/>
+            <field name="company_id" ref="base.main_company"/>
         </record>
     </data>
 </odoo>

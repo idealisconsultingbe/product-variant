@@ -10,10 +10,13 @@
 				<xpath expr="//notebook/page[@name='other_info']//field[@name='date']" position="after">
 			        <field name='property_account_discount_id'/>
                 </xpath>
-				<!--<xpath expr="//field[@name='amount_untaxed']" position="after">-->
-					<!--<field name='type_pymnt_term_discount' invisible="1"/>-->
-                    <!--<field name="amount_discount" attrs="{'invisible': [('type_pymnt_term_discount', '!=', 2)]}" widget="monetary"/>-->
-                <!--</xpath>-->
+				<xpath expr="//field[@name='amount_untaxed']" position="after">
+					<field name='type_pymnt_term_discount' invisible="1"/>
+                    <field name="amount_untaxed_discount" attrs="{'invisible': [('type_pymnt_term_discount', '!=', 2)]}" widget="monetary"/>
+                </xpath>
+				<xpath expr="//field[@name='amount_untaxed']" position="attributes">
+					<attribute name="attrs">{'invisible': [('type_pymnt_term_discount', '==', 2)]}</attribute>
+                </xpath>
 			</field>
 		</record>
 
