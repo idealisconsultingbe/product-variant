@@ -1,20 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+		<record id="plw_view_invoice_supplier_form" model="ir.ui.view">
+			<field name="name">plw.invoice.supplier.form</field>
+			<field name="model">account.invoice</field>
+			<field name="inherit_id" ref="account.invoice_supplier_form" />
+			<field name="arch" type="xml">
+				<!-- Add discount account -->
+				<xpath expr="//notebook/page[@name='other_info']//field[@name='date']" position="after">
+			        <field name='property_account_discount_id'/>
+                </xpath>
+				<!--<xpath expr="//field[@name='amount_untaxed']" position="after">-->
+					<!--<field name='type_pymnt_term_discount' invisible="1"/>-->
+                    <!--<field name="amount_discount" attrs="{'invisible': [('type_pymnt_term_discount', '!=', 2)]}" widget="monetary"/>-->
+                <!--</xpath>-->
+			</field>
+		</record>
+
 		<record id="eki_escomptes_payment_term_form_view" model="ir.ui.view">
 			<field name="name">eki.escompte.payment.term.view_order_form</field>
 			<field name="model">account.payment.term</field>
 			<field name="inherit_id" ref="account.view_payment_term_form" />
 			<field name="arch" type="xml">
-			    <xpath expr="/form/group" position="replace">
+			    <xpath expr="/form/sheet/group" position="replace">
 			        <group col="4">
                         <field name="name"/>
                         <field name="active"/>
                         <field name="company_id" invisible="1"/>
                     </group>
                     <group col="2">
-                        <field name="act_htva"/>
-                        <field name="act_tva"/>
+                        <field name="discount_type"/>
                     </group>
                 </xpath>
             </field>
@@ -25,9 +40,8 @@
 			<field name="model">account.payment.term</field>
 			<field name="arch" type="xml">
 				<tree string="Payment terms">
-				    <field name='name' />
-				    <field name="act_htva" />
-				    <field name="act_tva" />
+				    <field name='name'/>
+				    <field name="discount_type"/>
 				</tree>
 			</field>
 		</record>

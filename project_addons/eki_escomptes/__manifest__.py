@@ -31,9 +31,12 @@ Ekivrac Module
 Main module
         """,
     'depends': [
-        'base'
+        'base',
+        'account'
     ],
     'data': [
+        'data/eki_es_account_account.xml',
+        'views/eki_es_account_invoice_view.xml',
     ],
     'qweb': [
     ],

@@ -21,6 +21,7 @@
 ##############################################################################
 
 from odoo import api, models, fields, _
+from odoo.exceptions import UserError
 
 
 class EkiEscomptesAccountInvoice(models.Model):
@@ -55,9 +56,9 @@ class EkiEscomptesAccountInvoice(models.Model):
 
             name = inv.name or ''
             if inv.payment_term_id:
-                totlines = \
-                inv.payment_term_id.with_context(currency_id=company_currency.id).compute(total, inv.date_invoice)[0]
+                totlines = inv.payment_term_id.with_context(currency_id=company_currency.id).compute(total, inv.date_invoice)[0]
                 res_amount_currency = total_currency
+                discount_type = inv.type_pymnt_term_discount
                 for i, t in enumerate(totlines):
                     if inv.currency_id != company_currency:
                         amount_currency = company_currency._convert(t[1], inv.currency_id, inv.company_id,
@@ -80,6 +81,30 @@ class EkiEscomptesAccountInvoice(models.Model):
                         'currency_id': diff_currency and inv.currency_id.id,
                         'invoice_id': inv.id
                     })
+                # AMh Begin, Rework escomptes
+                sign = self.type in ['in_refund', 'out_refund'] and -1 or 1
+                if discount_type in [1, 2] and inv.type in ['in_invoice', 'in_refund']:
+                    iml_e, l_e = [], []
+                    for l in iml:
+                        if int(l['account_id']) == int(inv.account_id):
+                            l_e.append(l)
+                        else:
+                            iml_e.append(l)
+                    if l_e:
+                        tot_lp = sum([l['price'] for l in l_e])
+                        min_lp = max([l['price'] for l in l_e])
+                        es_am = -sign * inv._get_amount_based_discount(self.amount_untaxed)[0]
+                        for l in l_e:
+                            if l['price'] == min_lp:
+                                l['price'] = es_am
+                                l['account_id'] = inv.property_account_discount_id.id
+                                l['name'] = _('Discount')
+                            else:
+                                l['price'] = tot_lp - es_am
+
+                    iml_e.extend(l_e)
+                    iml = iml_e
+                # AMH End
             else:
                 iml.append({
                     'type': 'dest',
@@ -118,51 +143,64 @@ class EkiEscomptesAccountInvoice(models.Model):
             inv.write(vals)
         return True
 
-    def _get_payement_term_escompte_type(self):
+    @api.model
+    def get_pay_term_lines(self):
+        """ get payement term lines infos """
+        res = {}
+        for line in self.payment_term_id.line_ids:
+            option = line.value
+            if option not in res.keys():
+                res[option] = []
+            res[option].append({
+                'option': line.option,
+                'days': line.days,
+                'value': line.value_amount,
+            })
+        return res
+
+    @api.onchange("amount_untaxed", "payment_term_id")
+    @api.depends("payment_term_id")
+    def _compute_amount_discount(self):
+        for o in self:
+            o.amount_discount = o.amount_untaxed - self._get_amount_based_discount(self.amount_untaxed)[0]
+
+    @api.multi
+    @api.depends('payment_term_id')
+    def _get_payement_term_discount_type(self):
         """Return escompte number based in payement term id"""
         for inv in self:
             if inv.payment_term_id:
                 # begin AMH
-                act_htva = inv.payment_term_id.act_htva
-                act_tva = inv.payment_term_id.act_tva
-                inv.type_pymnt_term_escompte = 3 if (act_htva and act_tva) else 2 if act_tva else 1 if act_htva else 0  # escompte 1,2 or 3
+                discount_type = inv.payment_term_id.discount_type
+                inv.type_pymnt_term_discount = 3 if discount_type == 'discount_vat' else 2 if discount_type == 'discount' else 1
 
     @api.one
-    def _get_amount_based_escompte(self, value):
-        """ apply escompte on amount"""
-        currency = self.currency_id or None
+    def _get_amount_based_discount(self, value):
         # AMH begin
         if self.payment_term_id and self.type in ['in_invoice', 'in_refund']:
             prec_currency = self.currency_id or self.company_id.currency_id
             prec_currency = prec_currency.decimal_places
-            act_htva = self.payment_term_id.act_htva
-            act_tva = self.payment_term_id.act_tva
-            if self.payment_term_id and (self.payment_term_id.act_htva
-                                         or self.payment_term_id.act_tva):
-                try:
-                    ess = []
-                    for k, v in self.get_pay_term_lines().items():
-                        if k == 'percent':
-                            for term in v:
-                                per = term['value']
-                                return value - round(value * (per / 100.0),
-                                                     prec_currency)  # just one (this is the escompte line)
-                except Exception as e:
-                    print("LOG: Erreur apply escompte", e.message)
-                    return value
+            try:
+                ess = []
+                for k, v in self.get_pay_term_lines().items():
+                    if k == 'percent':
+                        for term in v:
+                            per = term['value']
+                            return value - round(value * (per / 100.0),
+                                                 prec_currency)  # just one (this is the escompte line)
+            except Exception as e:
+                print("LOG: Erreur apply discount", str(e))
+                return value
         # AMH end
         return value
 
-    def _get_tax_based_escompte(self, value):
+    def _get_tax_based_discount(self, value):
         """ apply escompte on htva amount """
-        currency = self.currency_id or None
         # AMH begin
         if self.payment_term_id and self.type in ['in_invoice', 'in_refund']:
             prec_currency = self.currency_id or self.company_id.currency_id
             prec_currency = prec_currency.decimal_places
-            act_htva = self.payment_term_id.act_htva
-            act_tva = self.payment_term_id.act_tva
-            if self.payment_term_id and self.payment_term_id.act_tva:
+            if self.type_pymnt_term_discount == 2 or self.type_pymnt_term_discount == 3:
                 try:
                     ess = []
                     for k, v in self.get_pay_term_lines().items():
@@ -171,14 +209,42 @@ class EkiEscomptesAccountInvoice(models.Model):
                                 per = term['value']
                                 return round(value * (per / 100.0), prec_currency)  # just one (this is the escompte line)
                 except Exception as e:
-                    print("LOG: Erreur apply escompte on tax", e.message)
+                    print("LOG: Erreur apply discount on tax", str(e))
                     return value
         # AMH end
         return value
+
+    def _compute_amount(self):
+        super(EkiEscomptesAccountInvoice, self)._compute_amount()
+        # AMH begin, rework Escompte
+        self.amount_discount = self.amount_untaxed - self._get_amount_based_discount(self.amount_untaxed)[0]
+        if self.type_pymnt_term_discount == 2:
+            self.amount_untaxed = self.amount_discount
+        # AMH end
+
+    def _prepare_tax_line_vals(self, line, tax):
+        vals = super(EkiEscomptesAccountInvoice, self)._prepare_tax_line_vals(line ,tax)
+        # Amh begin
+        vals['amount'] = self._get_tax_based_discount(vals['amount'])
+        vals['base'] = self._get_tax_based_discount(vals['base'])
+        # Amh end
+        return vals
+
+    @api.onchange('payment_term_id')
+    def _onchange_payment_term(self):
+        if not self.payment_term_id and self.partner_id:
+            self.payment_term_id = self.partner_id.property_supplier_payment_term_id
+            self._onchange_invoice_line_ids()
+        else:
+            self._onchange_invoice_line_ids()
+
+    type_pymnt_term_discount = fields.Integer(string="Discount type", default=1, compute=_get_payement_term_discount_type)
+    amount_discount = fields.Float(string="Untaxed Amount (Disc)", default=0.0, compute=_compute_amount_discount)
+    property_account_discount_id = fields.Many2one('account.account', company_dependent=True, string="Account Discount", help="This account will be used for discount", required=True)
 
 
 class EkiEscomptesAccountPaymentTerm(models.Model):
     _inherit = "account.payment.term"
     _description = "Payment Terms"
 
-    act_tva = fields.Selection([('total', 'VAT based on total amount'), ('discount', 'VAT based on the amount discounted')], string="VAT based on?", default="total")
+    discount_type = fields.Selection([('total', 'VAT based on total amount'), ('discount', 'Discount htva + VAT based on the amount discounted'), ('discount_vat', 'VAT based on the amount discounted')], string="Type of discount", default="total")
