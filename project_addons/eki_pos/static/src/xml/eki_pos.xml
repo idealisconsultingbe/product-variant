@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="eki_pos_template_extensions">
+    <t t-extend="Product">
+        <t t-jquery=".product-img" t-operation="replace">
+            <div class="product-img">
+                <img t-att-src='image_url' alt="Product image"/>
+                <t t-if="!product.to_weight">
+                    <span class="price-tag">
+                        <t t-esc="widget.format_currency(product.get_display_price(pricelist, widget.pos),'Product Price')"/>
+                    </span>
+                </t>
+                <t t-if="product.to_weight">
+                    <span class="price-tag">
+                        <t t-esc="widget.format_currency(product.get_display_price(pricelist, widget.pos),'Product Price')+'/'+widget.pos.units_by_id[product.uom_id[0]].name"/>
+                    </span>
+                </t>
+            </div>
+        </t>
+    </t>
+</templates>

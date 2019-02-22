@@ -7,6 +7,9 @@
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//button[@name='button_confirm']" position="after">
+                    <button name="update_vidange" type="object" string="Update Vidange" attrs="{'invisible' : [('state', '!=', 'draft')]}"/>
+                </xpath>
                 <xpath expr="//field[@name='order_line']/tree" position="attributes">
                     <attribute name="decoration-warning">eki_is_product_under_min_stock==True</attribute>
                 </xpath>

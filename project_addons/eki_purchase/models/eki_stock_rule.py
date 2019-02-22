@@ -20,7 +20,7 @@
 #
 ##############################################################################
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 
@@ -29,24 +29,15 @@ class EkiStockRule(models.Model):
 
     @api.multi
     def _run_buy(self, product_id, product_qty, product_uom, location_id, name, origin, values):
-        # New function add all product from the supplier into the PO
+        # New function add all product from the supplier into the PO (+ their emptying)
         def _add_product_from_supplier_id(po):
-            if po.partner_id:
-                now = fields.Datetime.now()
-                supplier_infos = po.env['product.supplierinfo'].search(
-                    [('name', '=', po.partner_id.id), '|', '&', ('date_start', '<=', now), ('date_end', '>=', now), '&',
-                     ('date_start', '=', False), ('date_end', '=', False)])
-                for supplier_info in supplier_infos:
-                    product = supplier_info.product_id if supplier_info.product_id else supplier_info.product_tmpl_id.product_variant_id
-                    if product and product not in po.order_line.mapped('product_id'):
-                        vals = {'name': product.name,
-                                'product_id': product.id,
-                                'product_qty': 0,
-                                'product_uom': supplier_info.product_uom.id,
-                                'price_unit': product.list_price,
-                                'date_planned': now,
-                                'order_id': po.id}
-                        po.env['purchase.order.line'].sudo().create(vals)
+            product_not_to_add = [line.product_id.id for line in po.order_line]
+            vals = po._add_product_from_supplier(product_not_to_add)
+            if vals:
+                for val in vals:
+                    val[2].update({'order_id': po.id})
+                po.env['purchase.order.line'].sudo().create(vals)
+            po.update_vidange()
         cache = {}
         suppliers = product_id.seller_ids \
             .filtered(lambda r: (not r.company_id or r.company_id == values['company_id']) and (
@@ -71,7 +62,6 @@ class EkiStockRule(models.Model):
             vals = self._prepare_purchase_order(product_id, product_qty, product_uom, origin, values, partner)
             company_id = values.get('company_id') and values['company_id'].id or self.env.user.company_id.id
             po = self.env['purchase.order'].with_context(force_company=company_id).sudo().create(vals)
-            _add_product_from_supplier_id(po) #ADD all products from the supplier
             cache[domain] = po
         elif not po.origin or origin not in po.origin.split(', '):
             if po.origin:
@@ -94,6 +84,7 @@ class EkiStockRule(models.Model):
         if not po_line:
             vals = self._prepare_purchase_order_line(product_id, product_qty, product_uom, values, po, partner)
             self.env['purchase.order.line'].sudo().create(vals)
+        _add_product_from_supplier_id(po)  # ADD all products from the supplier
 
     # WARNING! BReaking the standard HUGE impact.
     # The behavior when creating a PO line created from the scheduler or from an SO could change.

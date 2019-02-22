@@ -21,30 +21,22 @@
 ##############################################################################
 
 {
-    'name': 'Ekivrac Base',
+    'name': 'Ekivrac Product',
     'category': 'Ekivrac',
     'version': '1.0',
     'website': 'https://www.idealisconsulting.com/',
     'description': """
 Ekivrac Module
 
-Main module
+Product module
         """,
     'depends': [
-        'stock',
         'product',
-        'sale',
-        'sale_management',
-        'sale_purchase',
-        'point_of_sale',
+        'eki_base',
     ],
     'data': [
-        'security/eki_base_security.xml',
-        'views/eki_partner_view.xml',
-        'views/eki_product_view.xml',
-        'views/eki_sale_view.xml',
-
-        'security/ir.model.access.csv',
+        'views/eki_product_views.xml',
+        'reports/eki_product_stickers.xml',
     ],
     'qweb': [
     ],

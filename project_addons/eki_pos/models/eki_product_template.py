@@ -20,36 +20,17 @@
 #
 ##############################################################################
 
-{
-    'name': 'Ekivrac Base',
-    'category': 'Ekivrac',
-    'version': '1.0',
-    'website': 'https://www.idealisconsulting.com/',
-    'description': """
-Ekivrac Module
+from odoo import models, api
 
-Main module
-        """,
-    'depends': [
-        'stock',
-        'product',
-        'sale',
-        'sale_management',
-        'sale_purchase',
-        'point_of_sale',
-    ],
-    'data': [
-        'security/eki_base_security.xml',
-        'views/eki_partner_view.xml',
-        'views/eki_product_view.xml',
-        'views/eki_sale_view.xml',
 
-        'security/ir.model.access.csv',
-    ],
-    'qweb': [
-    ],
-    'demo': [
-    ],
-    'installable': True,
-    'application': True,
-}
+class EkiProductTemplate(models.Model):
+    _inherit = 'product.template'
+
+    @api.onchange('categ_id')
+    def onchange_categ_id(self):
+        """
+        On product category change, update with related POS category
+        :return:
+        """
+        for product in self:
+            product.pos_categ_id = product.categ_id.pos_categ_id
