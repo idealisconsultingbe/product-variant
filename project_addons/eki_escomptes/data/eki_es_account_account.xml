@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Account.invoice discount account Property -->
+        <record forcecreate="True" id="default_discount_account" model="ir.property">
+            <field name="name">Discount account</field>
+            <field name="fields_id" search="[('model','=','account.invoice'),('name','=','property_account_discount_id')]"/>
+            <field name="res_id" eval="False"/>
+            <field name="value" eval="'account.account,'+str(ref('l10n_be.a757'))"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+    </data>
+</odoo>
