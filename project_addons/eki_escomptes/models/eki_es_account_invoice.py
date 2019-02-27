@@ -89,7 +89,7 @@ class EkiEscomptesAccountInvoice(models.Model):
                     })
                 # AMh Begin, Rework escomptes
                 sign = self.type in ['in_refund', 'out_refund'] and -1 or 1
-                if discount_type in [1, 2] and inv.type in ['in_invoice', 'in_refund']:
+                if discount_type in [1, 2, 3] and inv.type in ['in_invoice', 'in_refund']:
                     iml_e, l_e = [], []
                     for l in iml:
                         if int(l['account_id']) == int(inv.account_id):
@@ -99,9 +99,9 @@ class EkiEscomptesAccountInvoice(models.Model):
                     if l_e:
                         tot_lp = sum([l['price'] for l in l_e])
                         min_lp = max([l['price'] for l in l_e])
-                        percent_discount = float(_get_percent_discount(inv.amount_untaxed, inv.amount_untaxed_discount))
-                        full_tax = inv.amount_tax / percent_discount if inv.type_pymnt_term_discount != 1 else inv.amount_tax
-                        es_am = -sign * (inv.amount_untaxed + full_tax) * (1 - percent_discount) if discount_type == 1 else  -sign * (inv.amount_untaxed - inv.amount_untaxed_discount)
+                        # percent_discount = float(_get_percent_discount(inv.amount_untaxed, inv.amount_untaxed_discount))
+                        # full_tax = inv.amount_tax / percent_discount if inv.type_pymnt_term_discount != 1 else inv.amount_tax
+                        es_am = -sign * (inv.amount_untaxed - inv.amount_untaxed_discount)
                         for l in l_e:
                             if l['price'] == min_lp:
                                 l['price'] = es_am
