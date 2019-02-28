@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="eki_product_date_price_form_view" model="ir.ui.view">
+            <field name="name">eki.product.date.price.form.view</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <field name="lst_price" position="before">
+                    <field name="date_last_changed_price" attrs="{'invisible':[('date_last_changed_price','=',False)]}"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

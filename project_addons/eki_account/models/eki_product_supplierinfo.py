@@ -34,6 +34,10 @@ class EkiSupplierInfo(models.Model):
                 'price': supplierinfo.eki_last_supplier_price,
                 'eki_last_supplier_price': 0.0,
                 'eki_price_has_changed': False})
+            if supplierinfo.product_id:
+                supplierinfo.product_id.date_last_changed_price = fields.Datetime.now()
+            else:
+                supplierinfo.product_tmpl_id.product_variant_ids.write({'date_last_changed_price': fields.Datetime.now()})
 
     @api.multi
     def _refuse_new_price(self):

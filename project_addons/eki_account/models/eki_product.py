@@ -20,30 +20,15 @@
 #
 ##############################################################################
 
-{
-    'name': 'Ekivrac Account',
-    'category': 'Ekivrac',
-    'version': '1.0',
-    'website': 'https://www.idealisconsulting.com/',
-    'description': """
-Ekivrac Module
+from odoo import api, fields, models
 
-Account Module
-        """,
-    'depends': [
-        'account',
-        'purchase',
 
-    ],
-    'data': [
-        'views/eki_account_invoice_views.xml',
-        'views/eki_product_supplierinfo_views.xml',
-        'views/eki_product_views.xml',
-    ],
-    'qweb': [
-    ],
-    'demo': [
-    ],
-    'installable': True,
-    'application': True,
-}
+class EkiAccountProduct(models.Model):
+    _inherit = "product.product"
+
+    def write(self, values):
+        if values.get('lst_price', False):
+            values.update({'date_last_changed_price': fields.Datetime.now()})
+        return super(EkiAccountProduct, self).write(values)
+
+    date_last_changed_price = fields.Datetime(string="Last Changed Of Price", readonly=True)
