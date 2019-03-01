@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="eki_point_of_sale_kanban_view" model="ir.ui.view">
+            <field name="name">Eki POS Kanban</field>
+            <field name="model">pos.config</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_config_kanban"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='open_session_cb']" position="after">
+                    <button t-if="!record.current_session_id.raw_value &amp;&amp; !record.pos_session_username.value" class="btn btn-primary" name="%(eki_pos.eki_search_product_price_action)d" type="action">Print new tags</button>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

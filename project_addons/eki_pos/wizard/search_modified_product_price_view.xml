@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="eki_search_product_price_form_view" model="ir.ui.view">
+            <field name="name">Eki Search Modified Product Price</field>
+            <field name="model">search.modified.product.price</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group name="general">
+                        <group name="date">
+                            <field name="date"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="find_product_price_changed" string="Search Modified Prices" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="eki_found_product_price_form_view" model="ir.ui.view">
+            <field name="name">Eki Found Modified Product Price</field>
+            <field name="model">search.modified.product.price</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group name="general">
+                        <group name="product">
+                            <field name="product_ids">
+                                <tree name="tag_to_be_printed" create="false" edit="false">
+                                    <field name="default_code"/>
+                                    <field name="name"/>
+                                    <field name="lst_price"/>
+                                    <field name="date_last_changed_price"/>
+                                    <field name="uom_id"/>
+                                    <field name="barcode"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="print_tags" string="Print Tags" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="eki_search_product_price_action" model="ir.actions.act_window">
+            <field name="name">Modified Prices</field>
+            <field name="res_model">search.modified.product.price</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="eki_pos.eki_search_product_price_form_view"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

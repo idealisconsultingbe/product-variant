@@ -20,33 +20,4 @@
 #
 ##############################################################################
 
-{
-    'name': 'Ekivrac POS',
-    'category': 'Ekivrac',
-    'version': '1.0',
-    'website': 'https://www.idealisconsulting.com/',
-    'description': """
-Ekivrac Module
-
-PoS Module
-        """,
-    'depends': [
-        'eki_account',
-        'point_of_sale',
-        'product',
-    ],
-    'data': [
-        'wizard/search_modified_product_price_view.xml',
-
-        'views/eki_point_of_sale_dashboard.xml',
-        'views/eki_product_category_view.xml',
-        'views/eki_pos_assets.xml',
-    ],
-    'qweb': [
-        'static/src/xml/eki_pos.xml'
-    ],
-    'demo': [
-    ],
-    'installable': True,
-    'application': True,
-}
+from . import search_modified_product_price
