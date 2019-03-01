@@ -23,7 +23,7 @@
 from odoo import api, fields, models
 
 
-class EkiProductTemplate(models.Model):
-    _inherit = "product.template"
+class EkiProductProduct(models.Model):
+    _inherit = "product.product"
 
     eki_origin_country_id = fields.Many2one('res.country', string='Origin')
