@@ -44,6 +44,34 @@ class EkiProductCategory(models.Model):
     eki_is_price_change_continuously = fields.Boolean(string="Price change continuously")
     eki_is_return = fields.Boolean(string="Return")
 
+    @api.onchange('parent_id')
+    def _onchange_parent_id_eki_fields(self):
+        if self.parent_id:
+            self.eki_is_price_change_continuously = self.parent_id.eki_is_price_change_continuously
+            self.eki_is_return = self.parent_id.eki_is_return
+
+    @api.model
+    def create(self, values):
+        product_category = super(EkiProductCategory, self).create(values)
+        if product_category.parent_id:
+            product_category.write({
+                'eki_is_price_change_continuously': product_category.parent_id.eki_is_price_change_continuously,
+                'eki_is_return': product_category.parent_id.eki_is_return
+            })
+        return product_category
+
+    @api.multi
+    def write(self, values):
+        res = super(EkiProductCategory, self).write(values)
+        if not self.parent_id and 'eki_is_price_change_continuously' in values or 'eki_is_return' in values:
+            product_category_ids = self.search([('parent_id', '=', self.id)])
+            for product_category_id in product_category_ids:
+                product_category_id.write({
+                    'eki_is_price_change_continuously': self.eki_is_price_change_continuously,
+                    'eki_is_return': self.eki_is_return
+                })
+        return res
+
 
 class EkiProductTemplate(models.Model):
     _inherit = "product.template"

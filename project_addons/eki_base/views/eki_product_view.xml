@@ -25,7 +25,6 @@
                             <field name="eki_nutritional_advise"/>
                             <field name="eki_ldap"/>
                             <field name="eki_product_labels_ids" widget="many2many_tags" options="{'no_create':True, 'no_create_edit': False}"/>
-
                         </group>
                     </group>
                 </xpath>
@@ -65,10 +64,10 @@
                 <xpath expr="//sheet/group[1]" position="after">
                     <group name="pos" string="Ekivrac Information">
                         <group>
-                            <field name="eki_is_price_change_continuously"/>
+                            <field name="eki_is_price_change_continuously" attrs="{'readonly': [('parent_id', '!=', False)]}"/>
                         </group>
                         <group>
-                            <field name="eki_is_return"/>
+                            <field name="eki_is_return" attrs="{'readonly': [('parent_id', '!=', False)]}"/>
                         </group>
                     </group>
                 </xpath>
