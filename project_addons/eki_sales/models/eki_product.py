@@ -20,34 +20,21 @@
 #
 ##############################################################################
 
-{
-    'name': 'Ekivrac all',
-    'category': 'Ekivrac',
-    'version': '1.0',
-    'website': 'https://www.idealisconsulting.com/',
-    'description': """
-Ekivrac Module
+from odoo import api, fields, models
+from odoo.addons import decimal_precision as dp
 
-All module installation
-        """,
-    'depends': [
-        'base',
-        'eki_base',
-        'eki_purchase',
-        'eki_stock',
-        'eki_account',
-        'eki_barcode',
-        'eki_product',
-        'eki_sales',
-        'eki_pos',
-    ],
-    'data': [
 
-    ],
-    'qweb': [
-    ],
-    'demo': [
-    ],
-    'installable': True,
-    'application': True,
-}
+class EkiSalesProductTemplate(models.Model):
+    _inherit = "product.template"
+
+    @api.multi
+    @api.depends('eki_price_ratio', 'standard_price')
+    def _compute_list_price(self):
+        for product in self:
+            ratio = 1
+            if product.eki_price_ratio:
+                ratio = product.eki_price_ratio
+            product.list_price = ratio * product.standard_price
+
+    eki_price_ratio = fields.Float("Ratio for Price", digits=dp.get_precision('Discount'), default=0.0, help="Public price is calculating from cost * Ratio")
+    list_price = fields.Float(readonly=True, compute=_compute_list_price)
