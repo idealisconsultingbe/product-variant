@@ -57,6 +57,7 @@ class EkiProductCategory(models.Model):
             product_category.write({
                 'eki_is_price_change_continuously': product_category.parent_id.eki_is_price_change_continuously,
                 'eki_is_return': product_category.parent_id.eki_is_return
+                'eki_is_return': product_category.parent_id.eki_is_return
             })
         return product_category
 
