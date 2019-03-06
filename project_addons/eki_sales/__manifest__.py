@@ -21,28 +21,20 @@
 ##############################################################################
 
 {
-    'name': 'Ekivrac all',
+    'name': 'Ekivrac Sales',
     'category': 'Ekivrac',
     'version': '1.0',
     'website': 'https://www.idealisconsulting.com/',
     'description': """
 Ekivrac Module
 
-All module installation
+Sales module
         """,
     'depends': [
-        'base',
-        'eki_base',
-        'eki_purchase',
-        'eki_stock',
-        'eki_account',
-        'eki_barcode',
-        'eki_product',
-        'eki_sales',
-        'eki_pos',
+        'product'
     ],
     'data': [
-
+        'views/eki_product_view.xml'
     ],
     'qweb': [
     ],
